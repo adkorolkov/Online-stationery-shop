@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KatalogActivity"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <Button
+        android:layout_marginLeft="10dp"
+        android:id="@+id/back"
+        android:background="@android:color/transparent"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/baseline_arrow_back_24">
+
+    </Button>
+
+    <EditText
+        android:paddingLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edit_text_style"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="5dp"
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="@string/search_things"
+        android:imeOptions="actionSearch"
+        android:inputType="text">
+    </EditText>
+    <Button
+        android:layout_marginTop="5dp"
+        android:id="@+id/cancel"
+        android:background="@android:color/transparent"
+        android:layout_marginLeft="230dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/baseline_cancel_24"></Button>
+    <Button
+        android:id="@+id/searchbt"
+        android:background="@android:color/transparent"
+        android:layout_marginLeft="295dp"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/baseline_search_24"></Button>
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/goodslist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="30"/>
+
+    <ListView
+        android:id="@+id/imagelisttest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:menu="@menu/my_navigation_items"
+        app:itemBackground="@color/base"
+        app:itemIconTint="@android:color/black"
+        app:itemTextColor="@android:color/black" />
+
+
+</LinearLayout>
