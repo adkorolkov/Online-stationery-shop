@@ -11,21 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OnlineStationeryShop"
         tools:targetApi="31">
-        <activity
-            android:name=".KatalogActivity"
-            android:label="KatalogActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <activity
-            android:name=".InfoGoodActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:label="InfoGoodActivity">
+            android:label="KatalogActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

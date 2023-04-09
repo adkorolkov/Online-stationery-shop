@@ -23,6 +23,12 @@
         android:layout_height="wrap_content">
 
     </ListView>
+    <HorizontalScrollView
+        android:id="@+id/horizont"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+
+    </HorizontalScrollView>
     <Button
         android:id="@+id/backInfo"
         android:layout_width="match_parent"
