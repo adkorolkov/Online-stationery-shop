@@ -41,6 +41,8 @@ public class MainActivity  extends AppCompatActivity {
     //NavController navControllerStart = Navigation.findNavController(this, R.id.action_placeholder_to_CatalogFragment);
     //NavController navControllerInfo = Navigation.findNavController(this, R.id.action_CatalogFragment_to_InfoGoodFragment);
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,15 +50,15 @@ public class MainActivity  extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
 
         setContentView(mBinding.getRoot());
-       /* try {
-            NavHostFragment hostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-            NavController a = hostFragment.getNavController();
+        try {
+            System.out.println("ccc");
+            //NavHostFragment hostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+            //NavController a = hostFragment.getNavController();
+            //NavigationUI.setupActionBarWithNavController(this, a);
             NavController navController = Navigation.findNavController(this, R.id.my_nav_host_fragment);
-            NavigationUI.setupActionBarWithNavController(this, a);
         }
         catch (Exception e){
             System.out.println("qqq"+e);
         }
-        */
     }
 }

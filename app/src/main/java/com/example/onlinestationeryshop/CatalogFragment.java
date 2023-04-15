@@ -87,10 +87,17 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     @SuppressLint("ResourceType")
     public void onClick(int i) {
         System.out.println("Нажата область товара  " + i);
-        try{
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putInt("IdArg", i);
+            bundle.putString("description", server.getForInd(i).getDescription());
+            bundle.putIntegerArrayList("images", server.getForInd(i).getImages());
+            Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+            NavController c = NavHostFragment.findNavController(navhost);
+            c.navigate(R.id.action_CatalogFragment_to_InfoGoodFragment, bundle);
         }
         catch (Exception e){
-            System.out.println("aaaaaaaaa"+e);
+            System.out.println("bbb"+e);
         }
         // обрабатываете здесь ваши данные
 
@@ -210,13 +217,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        try {
-            //NavController navController = Navigation.findNavController(view);
-            //navController.navigate(R.id.action_CatalogFragment_to_InfoGoodFragment);
-        }
-        catch (Exception e){
-            System.out.println("bbb"+e);
-        }
         listitem  = new ArrayList<Good>();
         editText = mbinding.search;
         back = mbinding.back;
@@ -312,7 +312,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                                 System.out.println("Корзина");
                                 for(int i=0;i< cart.size();i++){
                                     ArrayList<Integer> q = cart.get(i);
-                                    String w = "Позиция " + (q.get(0) +1)+ "   " + q.get(1) + "штук";
+                                    String w = "Позиция " + (q.get(0) +1)+ "   " + q.get(1) + "  штук";
                                     Toast.makeText(getActivity().getApplicationContext(),w, Toast.LENGTH_SHORT).show();
                                     try {
                                         Thread.sleep(1000);

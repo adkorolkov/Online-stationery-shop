@@ -32,7 +32,7 @@ public class ImageAdapter extends ArrayAdapter<Integer> {
 
         View view=inflater.inflate(this.layout, parent, false);
 
-        ImageView ImView = view.findViewById(R.id.im);
+        ImageView ImView = view.findViewById(R.id.ima);
 
         Integer state = states.get(position);
 
