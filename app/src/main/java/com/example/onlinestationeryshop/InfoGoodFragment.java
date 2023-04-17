@@ -5,17 +5,22 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.onlinestationeryshop.databinding.ActivityInfogoodBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
@@ -32,12 +37,16 @@ import java.util.ArrayList;
 public class InfoGoodFragment extends Fragment {
     private static final String ARG_PARAM1 = "IdArg";
 
+    private ViewPager2 viewPager;
+
+
     private ArrayList<Integer> images;
     private InfoGoodRecucleAdapter infoGoodRecucleAdapter;
 
-    private RecyclerView recyclerView;
 
     private String desc;
+    private String name;
+    private Integer price;
 
     private Bundle bundle;
 
@@ -52,12 +61,6 @@ public class InfoGoodFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
 
-    private void updateAdapter(ArrayList<Integer> r){
-        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        infoGoodRecucleAdapter = new InfoGoodRecucleAdapter(getContext(), r);
-        recyclerView.setAdapter(infoGoodRecucleAdapter);
-    }
 
     public InfoGoodFragment() {
         // Required empty public constructor
@@ -78,6 +81,8 @@ public class InfoGoodFragment extends Fragment {
         if (getArguments() != null) {
             indexGood = getArguments().getInt(ARG_PARAM1);
             desc = getArguments().getString("description");
+            name = getArguments().getString("name");
+            price = getArguments().getInt("price");
             images = (ArrayList<Integer>) getArguments().getIntegerArrayList("images");
             for(int i=0;i< images.size();i++){
                 System.out.println(images.get(i));
@@ -89,11 +94,45 @@ public class InfoGoodFragment extends Fragment {
         Integer r = indexGood;
         System.out.println("InfoGoodFragment  " + r.toString());
         TextView des = binding.description;
+        TextView na = binding.text;
+        na.setText(name);
+        na.setTextSize(30);
+        TextView priceT = binding.price;
+        priceT.setText(price.toString() + " ₽");
+        priceT.setTextSize(20);
         des.setText(desc);
         back = binding.backInfo;
-        recyclerView = binding.imagelist;
+        viewPager = binding.viewpager;
+        ImageButton addToCart = binding.addToCart;
+        addToCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity().getApplicationContext(),"aaa", Toast.LENGTH_SHORT).show();
+            }
+        });
+        ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(getContext(), images);
         try{
-            updateAdapter(images);
+            viewPager.setAdapter(viewPager2Adapter);
+            viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                // This method is triggered when there is any scrolling activity for the current page
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+
+                // triggered when you select a new page
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                }
+
+                // triggered when there is
+                // scroll state will be changed
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    super.onPageScrollStateChanged(state);
+                }
+            });
         }
         catch (Exception e){
             System.out.println(e);
@@ -115,4 +154,5 @@ public class InfoGoodFragment extends Fragment {
         binding = FragmentInfoGoodBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
+
 }

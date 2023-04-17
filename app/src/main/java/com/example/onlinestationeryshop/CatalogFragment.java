@@ -91,6 +91,8 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
             Bundle bundle = new Bundle();
             bundle.putInt("IdArg", i);
             bundle.putString("description", server.getForInd(i).getDescription());
+            bundle.putString("name", server.getForInd(i).getName());
+            bundle.putInt("price", server.getForInd(i).getPrice());
             bundle.putIntegerArrayList("images", server.getForInd(i).getImages());
             Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
             NavController c = NavHostFragment.findNavController(navhost);
@@ -301,6 +303,9 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
+                            case R.id.action_catalog:
+                                System.out.println("Каталог");
+                                break;
                             case R.id.action_books:
                                 System.out.println("Заказы");
                                 break;

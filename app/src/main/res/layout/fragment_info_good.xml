@@ -6,23 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".InfoGoodFragment"
     android:orientation="vertical">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/index">
-    </TextView>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/description">
-
-    </TextView>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/imagelist"
-        android:orientation="horizontal"
+    <ScrollView
+        android:layout_weight="30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-    </androidx.recyclerview.widget.RecyclerView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/text"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </TextView>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </androidx.viewpager2.widget.ViewPager2>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/description">
+        </TextView>
+
+    </LinearLayout>
+    </ScrollView>
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/price"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    </TextView>
+    <ImageButton
+        android:layout_weight="1"
+        android:id="@+id/add_to_cart"
+        android:src="@drawable/add_to_cart"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    </ImageButton>
+</LinearLayout>
     <Button
         android:id="@+id/backInfo"
         android:layout_width="match_parent"
@@ -30,4 +62,14 @@
         android:text="Назад">
 
     </Button>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_gravity="bottom"
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:menu="@menu/my_navigation_items"
+        app:itemBackground="@color/base"
+        app:itemIconTint="@android:color/black"
+        app:itemTextColor="@android:color/black" />
 </LinearLayout>

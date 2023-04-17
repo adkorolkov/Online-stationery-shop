@@ -89,7 +89,7 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
             name = h + "...";
         }
         ((TextView) holder.binding.description).setText(p.getDescriptionShort() + "");
-        ((TextView) holder.binding.price).setText(p.getPrice() + " рублей");
+        ((TextView) holder.binding.price).setText(p.getPrice() + " ₽");
         ((TextView) holder.binding.name).setText(name);
         ((ImageView) holder.binding.icon).setImageResource(p.getImage_prev());
         ((Button) holder.binding.addToCart).setOnClickListener(new View.OnClickListener() {
