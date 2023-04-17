@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/action_catalog"
         android:title="Каталог"
-        android:icon="@drawable/baseline_print_24"/>
+        android:icon="@drawable/ic_baseline_home_24"/>
     <item android:id="@+id/action_books"
         android:title="Заказы"
         android:icon="@drawable/baseline_list_alt_24"/>

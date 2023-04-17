@@ -1,5 +1,6 @@
 package com.example.onlinestationeryshop;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,16 +16,19 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.onlinestationeryshop.databinding.ActivityInfogoodBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
 import com.example.onlinestationeryshop.databinding.FragmentInfoGoodBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
@@ -39,6 +43,8 @@ public class InfoGoodFragment extends Fragment {
 
     private ViewPager2 viewPager;
 
+    private TextView count_cart;
+
 
     private ArrayList<Integer> images;
     private InfoGoodRecucleAdapter infoGoodRecucleAdapter;
@@ -48,11 +54,12 @@ public class InfoGoodFragment extends Fragment {
     private String name;
     private Integer price;
 
+    private Server server = Server.getInstance();
+
     private Bundle bundle;
 
     private Integer indexGood;
 
-    private Button back;
 
     private FragmentInfoGoodBinding binding;
 
@@ -95,19 +102,61 @@ public class InfoGoodFragment extends Fragment {
         System.out.println("InfoGoodFragment  " + r.toString());
         TextView des = binding.description;
         TextView na = binding.text;
+        TextView count = binding.count;
+        count_cart = binding.countCart;
+        updateCart();
+        LinearLayout linearLayout = binding.tripleButton;
+        ImageButton minus = binding.minus;
+        ImageButton plus = binding.plus;
+        ImageButton addToCart = binding.addToCart;
+        linearLayout.setVisibility(View.GONE);
+        count.setTextSize(30);
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (count.getText().toString().equals("1")){
+                    count.setText("");
+                    server.deleteCartItem(r);
+                    updateCart();
+                    linearLayout.setVisibility(View.GONE);
+                    addToCart.setVisibility(View.VISIBLE);
+                }
+                else {
+                    Integer i = Integer.parseInt(count.getText().toString()) - 1;
+                    count.setText(i.toString());
+                    server.changeCartItem(r, -1);
+                    updateCart();
+                }
+            }
+        });
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Integer i = Integer.parseInt(count.getText().toString()) + 1;
+                if (i>999){
+                    count.setTextSize(25);
+                }
+                count.setText(i.toString());
+                server.changeCartItem(r, 1);
+                updateCart();
+            }
+        });
         na.setText(name);
         na.setTextSize(30);
         TextView priceT = binding.price;
         priceT.setText(price.toString() + " ₽");
         priceT.setTextSize(20);
         des.setText(desc);
-        back = binding.backInfo;
+        des.setTextSize(20);
         viewPager = binding.viewpager;
-        ImageButton addToCart = binding.addToCart;
         addToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity().getApplicationContext(),"aaa", Toast.LENGTH_SHORT).show();
+                server.addToCart(r, 1);
+                updateCart();
+                addToCart.setVisibility(View.GONE);
+                linearLayout.setVisibility(View.VISIBLE);
+                count.setText("1");
             }
         });
         ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(getContext(), images);
@@ -137,14 +186,44 @@ public class InfoGoodFragment extends Fragment {
         catch (Exception e){
             System.out.println(e);
         }
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                NavController c = NavHostFragment.findNavController(navhost);
-                c.navigate(R.id.action_InfoGoodFragment_to_Catalog_Fragment);
-            }
-        });
+        BottomNavigationView bottomNavigationView = binding.bottomNavigation;
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_catalog:
+                                System.out.println("Каталог");
+                                Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                                NavController c = NavHostFragment.findNavController(navhost);
+                                c.navigate(R.id.action_InfoGoodFragment_to_Catalog_Fragment);
+                                break;
+                            case R.id.action_books:
+                                System.out.println("Заказы");
+                                break;
+                            case R.id.action_print:
+                                System.out.println("Печать");
+                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                photoPickerIntent.setType("image/*");
+                                startActivityForResult(photoPickerIntent, 1);
+                                break;
+                            case R.id.action_cart:
+                                System.out.println("Корзина");
+                                break;
+                        }
+                        return false;
+                    }
+                });
+    }
+
+
+    private void updateCart(){
+        if (server.getCartCount()>0) {
+            count_cart.setText(server.getCartCount().toString());
+        }
+        else{
+            count_cart.setText("");
+        }
     }
 
     @Override

@@ -62,11 +62,13 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
 
     private FragmentCatalogBinding mbinding;
+    private TextView count_cart;
     ArrayList<ArrayList<Integer>> cart;
 
     private EditText editText;
 
-    Server server;
+    Server server = Server.getInstance();
+
 
     BottomNavigationView bottomNavigationView;
     GoodRycycleAdapter goodAdapter;
@@ -167,6 +169,13 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
                 boolean ok = false;
+                if(server.isItemInCart(index)){
+                    server.changeCartItem(index, 1);
+                }
+                else {
+                    server.addToCart(index, 1);
+                }
+                updateCart();
                 System.out.println("Размер cart " + cart.size());
                 if(cart.size()==0){
                     ArrayList<Integer> b = new ArrayList<>();
@@ -217,32 +226,27 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         }
     }
 
+    private void updateCart(){
+        if (server.getCartCount()>0) {
+            count_cart.setText(server.getCartCount().toString());
+        }
+        else{
+            count_cart.setText("");
+        }
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         listitem  = new ArrayList<Good>();
         editText = mbinding.search;
         back = mbinding.back;
         cancel = mbinding.cancel;
+        count_cart = mbinding.countCart;
+        updateCart();
         search = mbinding.searchbt;
         recyclerView = mbinding.goodsrecyclerlist;
         bottomNavigationView = mbinding.bottomNavigation;
         cart = new ArrayList<>();
-        ArrayList<Good> e = new ArrayList<>();
-        ArrayList<Integer> images_tr = new ArrayList<>();
-        images_tr.add(R.drawable.tractor);
-        images_tr.add(R.drawable.orange_will);
-        images_tr.add(R.drawable.red_will);
-        images_tr.add(R.drawable.will_gorizont);
-        ArrayList<Integer> images_mi = new ArrayList<>();
-        images_mi.add(R.drawable.mishe);
-        images_mi.add(R.drawable.orange_mi);
-        images_mi.add(R.drawable.heart_mi);
-        images_mi.add(R.drawable.circle_mi);
-        for (int i = 0; i < 20; i++) {
-            e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", 2*i, "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
-            e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 19000, "Колесо трактора", 2*i+1, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
-        }
-        server = new Server(e);
         fillData(server.search(""));
         updateAdapter(listitem);
         getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
