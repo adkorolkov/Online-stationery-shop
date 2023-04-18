@@ -1,0 +1,211 @@
+package com.example.onlinestationeryshop;
+
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.onlinestationeryshop.databinding.FragmentCartBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+public class CartFragment extends Fragment {
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+    LinearLayout cartLatout;
+    LinearLayout nullCart;
+    LinearLayout payLayout;
+    BottomNavigationView bottomNavigationView;
+    private FragmentCartBinding binding;
+    TextView price;
+    ArrayList<Good>  listitem;
+    private TextView count_cart;
+    TextView countQ;
+    private Server server = Server.getInstance();
+    private CartRecuclerViewAdapter adapter;
+    private RecyclerView recyclerView;
+
+
+    public CartFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment BlankFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static CartFragment newInstance(String param1, String param2) {
+        CartFragment fragment = new CartFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    private void updateAdapter(ArrayList<Good>  listitem){
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CartRecuclerViewAdapter(getContext(), listitem);
+        recyclerView.setAdapter(adapter);
+    }
+
+    @SuppressLint("ResourceType")
+    void fillData(ArrayList<Good> e) {
+        listitem = new ArrayList<>();
+        for(int i=0;i< e.size();i++) {
+            listitem.add(e.get(i));
+        }
+    }
+    private void updateCart(){
+        if (server.getCartCount()>0) {
+            cartLatout.setVisibility(View.VISIBLE);
+            nullCart.setVisibility(View.GONE);
+            payLayout.setVisibility(View.VISIBLE);
+            count_cart.setText(server.getCartCount().toString());
+            System.out.println("getPrice  " + Integer.toString(server.getCartPrice()));
+            price.setText(Integer.toString(server.getCartPrice()) + " ₽");
+            countQ.setText(Integer.toString(server.getCartCount()) + " товаров");
+        }
+        else{
+            cartLatout.setVisibility(View.GONE);
+            nullCart.setVisibility(View.VISIBLE);
+            payLayout.setVisibility(View.GONE);
+            count_cart.setText("");
+            price.setText("");
+            countQ.setText("");
+        }
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    protected BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                System.out.println(intent.getStringExtra(adapter.INFO) +  "  " +   intent.getStringExtra(adapter.INFO).equals("0"));
+                String h = intent.getStringExtra(adapter.INFO);
+                int index = Integer.parseInt(h);
+                if (index==-1){
+                    updateCart();
+                }
+                else {
+                    System.out.println("DELETE in BROADCAST " + index);
+                    server.deleteCartItem(index);
+                    fillData(server.getCartItems());
+                    updateAdapter(listitem);
+                    updateCart();
+                }
+
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        listitem = new ArrayList<Good>();
+        cartLatout = binding.cartLayout;
+        nullCart = binding.nullcart;
+        payLayout = binding.payLayout;
+        count_cart = binding.countCart;
+        price = binding.priceAll;
+        countQ = binding.countTotal;
+        updateCart();
+        bottomNavigationView = binding.bottomNavigation;
+        recyclerView = binding.cartList;
+        fillData(server.getCartItems());
+        updateAdapter(listitem);
+        Button pay = binding.pay;
+        pay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext().getApplicationContext(), "Оплачено, ебись оно конём", Toast.LENGTH_SHORT).show();
+                server.setNullCart();
+                updateCart();
+            }
+        });
+        getActivity().registerReceiver(receiver, new IntentFilter(adapter.CHANNEL));
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                        NavController c = NavHostFragment.findNavController(navhost);
+                        switch (item.getItemId()) {
+                            case R.id.action_catalog:
+                                System.out.println("Каталог");
+                                c.navigate(R.id.action_CartFragment_to_CatalogFragment);
+                                break;
+                            case R.id.action_books:
+                                System.out.println("Заказы");
+                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.action_print:
+                                System.out.println("Печать");
+                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                photoPickerIntent.setType("image/*");
+                                startActivityForResult(photoPickerIntent, 1);
+                                break;
+                            case R.id.action_cart:
+                                break;
+                            case R.id.action_profile:
+                                System.out.println("Профиль");
+                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = FragmentCartBinding.inflate(inflater, container, false);
+        // Inflate the layout for this fragment
+        return binding.getRoot();
+    }
+}

@@ -5,10 +5,12 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class Server {
 
     private static Server instance;
+    private String search_n = "";
     private ArrayList<Good> goods;
     private HashMap<Integer, Integer> cart;
 
@@ -24,9 +26,17 @@ public class Server {
         images_mi.add(R.drawable.orange_mi);
         images_mi.add(R.drawable.heart_mi);
         images_mi.add(R.drawable.circle_mi);
-        for (int i = 0; i < 20; i++) {
-            e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", 2*i, "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
-            e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 19000, "Колесо трактора", 2*i+1, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
+        int[] a = {1,2};
+
+        for (int i = 0; i < 50; i++) {
+            java.util.Random random = new java.util.Random();
+            int random_computer_card = random.nextInt(a.length);
+            if (random_computer_card==0){
+                e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", i, "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
+            }
+            else if (random_computer_card==1){
+                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 19000, "Колесо трактора", i, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
+            }
         }
         goods = e;
         cart = new HashMap<>();
@@ -46,6 +56,9 @@ public class Server {
         cart.put(id, number);
     }
 
+
+
+
     public void changeCartItem(int id, int number){
         int y = cart.get(id);
         cart.replace(id, y+number);
@@ -63,6 +76,10 @@ public class Server {
         return cart.containsKey(id);
     }
 
+    public Integer getItemCount(Integer r){
+        return cart.get(r);
+    }
+
     public Integer getCartCount(){
         int k = 0;
         List<Integer> list = new ArrayList<Integer>(cart.values());
@@ -72,12 +89,38 @@ public class Server {
         return k;
     }
 
-    public ArrayList<Good> search(String name){
+    public Integer getCartPrice(){
+        int q = 0;
+        Set<Integer> setKeys = cart.keySet();
+        for(Integer k: setKeys){
+            q+=(getForInd(k).getPrice()*cart.get(k));
+        }
+        return q;
+    }
+
+    public ArrayList<Good> getCartItems(){
+        ArrayList<Good> q = new ArrayList<>();
+        Set<Integer> setKeys = cart.keySet();
+        for(Integer k: setKeys){
+            q.add(getForInd(k));
+        }
+        return q;
+    }
+
+    public void setSearch(String search_n) {
+        this.search_n = search_n;
+    }
+
+    public void setNullCart(){
+        cart = new HashMap<>();
+    }
+
+    public ArrayList<Good> search(){
         ArrayList<Good> ret = new ArrayList<>();
         for(int i=0;i< goods.size();i++){
             String goodName = goods.get(i).getName();
             goodName = goodName.toLowerCase();
-            if(goodName.contains(name)){
+            if(goodName.contains(search_n)){
                 ret.add(goods.get(i));
             }
         }

@@ -25,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.onlinestationeryshop.databinding.ActivityInfogoodBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
 import com.example.onlinestationeryshop.databinding.FragmentInfoGoodBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -191,15 +190,16 @@ public class InfoGoodFragment extends Fragment {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                        NavController c = NavHostFragment.findNavController(navhost);
                         switch (item.getItemId()) {
                             case R.id.action_catalog:
                                 System.out.println("Каталог");
-                                Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                                NavController c = NavHostFragment.findNavController(navhost);
                                 c.navigate(R.id.action_InfoGoodFragment_to_Catalog_Fragment);
                                 break;
                             case R.id.action_books:
                                 System.out.println("Заказы");
+                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_print:
                                 System.out.println("Печать");
@@ -209,7 +209,11 @@ public class InfoGoodFragment extends Fragment {
                                 break;
                             case R.id.action_cart:
                                 System.out.println("Корзина");
+                                c.navigate(R.id.action_InfoGoodFragment_to_CartFragment);
                                 break;
+                            case R.id.action_profile:
+                                System.out.println("Профиль");
+                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
                         }
                         return false;
                     }

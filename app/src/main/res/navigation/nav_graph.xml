@@ -13,6 +13,10 @@
     <action
         android:id="@+id/action_CatalogFragment_to_InfoGoodFragment"
         app:destination="@id/InfoGoodFragment" />
+    <action
+        android:id="@+id/action_CatalogFragment_to_CartFragment"
+        app:destination="@id/CartFragment"/>
+
     </fragment>
     <fragment
         android:id="@+id/InfoGoodFragment"
@@ -22,8 +26,21 @@
         <action
             android:id="@+id/action_InfoGoodFragment_to_Catalog_Fragment"
             app:destination="@id/CatalogFragment"/>
+        <action
+            android:id="@+id/action_InfoGoodFragment_to_CartFragment"
+            app:destination="@id/CartFragment"/>
         <argument
             android:name="IdArg"
             android:defaultValue="0"/>
+    </fragment>
+    <fragment
+        android:id="@+id/CartFragment"
+        android:name="com.example.onlinestationeryshop.CartFragment"
+        android:label="cart_fragment"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_CartFragment_to_CatalogFragment"
+            app:destination="@id/CatalogFragment"></action>
+
     </fragment>
 </navigation>

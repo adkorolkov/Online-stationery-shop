@@ -95,6 +95,13 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         ((Button) holder.binding.addToCart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Server server = Server.getInstance();
+                if(server.isItemInCart(p.getId())){
+                    server.changeCartItem(p.getId(), 1);
+                }
+                else {
+                    server.addToCart(p.getId(), 1);
+                }
                 System.out.println("Нажата клавиша добавления в корзину " + (holder.getAdapterPosition()+1));
                 Message msg = new Message();
                 msg.obj = Integer.toString(p.getId());

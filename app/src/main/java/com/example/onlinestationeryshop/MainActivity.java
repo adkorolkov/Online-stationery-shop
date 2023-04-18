@@ -29,7 +29,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.onlinestationeryshop.databinding.ActivityKatalogBinding;
 import com.example.onlinestationeryshop.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

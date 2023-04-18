@@ -30,11 +30,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.onlinestationeryshop.databinding.ActivityKatalogBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -62,6 +62,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
 
     private FragmentCatalogBinding mbinding;
+    private TextView nulladapter;
     private TextView count_cart;
     ArrayList<ArrayList<Integer>> cart;
 
@@ -80,9 +81,18 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
 
     private void updateAdapter(ArrayList<Good>  listitem){
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        goodAdapter = new GoodRycycleAdapter(getContext(), listitem, this::onClick);
-        recyclerView.setAdapter(goodAdapter);
+        if (listitem.size()>0) {
+            nulladapter.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            goodAdapter = new GoodRycycleAdapter(getContext(), listitem, this::onClick);
+            recyclerView.setAdapter(goodAdapter);
+
+        }
+        else{
+            recyclerView.setVisibility(View.GONE);
+            nulladapter.setVisibility(View.VISIBLE);
+        }
         cancel.setVisibility(View.GONE);
     }
 
@@ -122,12 +132,13 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     public void search(View view){
         String text = editText.getText().toString();
         text = text.toLowerCase();
+        server.setSearch(text);
         editText.setText("");
         hideKeyboardFrom(view.getContext(),view);
         FocusOff(editText);
         System.out.println(text + "aaa");
         if(text.length()>0) {
-            fillData(server.search(text));
+            fillData(server.search());
             updateAdapter(listitem);
         }
     }
@@ -169,12 +180,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
                 boolean ok = false;
-                if(server.isItemInCart(index)){
-                    server.changeCartItem(index, 1);
-                }
-                else {
-                    server.addToCart(index, 1);
-                }
                 updateCart();
                 System.out.println("Размер cart " + cart.size());
                 if(cart.size()==0){
@@ -238,6 +243,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         listitem  = new ArrayList<Good>();
+        nulladapter = mbinding.nullAdapter;
         editText = mbinding.search;
         back = mbinding.back;
         cancel = mbinding.cancel;
@@ -247,7 +253,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         recyclerView = mbinding.goodsrecyclerlist;
         bottomNavigationView = mbinding.bottomNavigation;
         cart = new ArrayList<>();
-        fillData(server.search(""));
+        fillData(server.search());
         updateAdapter(listitem);
         getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
         editText.addTextChangedListener(new TextWatcher() {
@@ -282,6 +288,9 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                server.setSearch("");
+                fillData(server.search());
+                updateAdapter(listitem);
                 editText.setText("");
                 hideKeyboardFrom(view.getContext(), view);
                 FocusOff(editText);
@@ -309,27 +318,39 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                         switch (item.getItemId()) {
                             case R.id.action_catalog:
                                 System.out.println("Каталог");
+                                server.setSearch("");
+                                fillData(server.search());
+                                updateAdapter(listitem);
                                 break;
                             case R.id.action_books:
                                 System.out.println("Заказы");
+                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.action_print:
                                 System.out.println("Печать");
-
+                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                photoPickerIntent.setType("image/*");
+                                startActivityForResult(photoPickerIntent, 1);
                                 break;
                             case R.id.action_cart:
                                 System.out.println("Корзина");
-                                for(int i=0;i< cart.size();i++){
-                                    ArrayList<Integer> q = cart.get(i);
-                                    String w = "Позиция " + (q.get(0) +1)+ "   " + q.get(1) + "  штук";
-                                    Toast.makeText(getActivity().getApplicationContext(),w, Toast.LENGTH_SHORT).show();
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException ex) {
-                                        throw new RuntimeException(ex);
-                                    }
-                                }
+                                //for(int i=0;i< cart.size();i++){
+                                 //   ArrayList<Integer> q = cart.get(i);
+                                 //   String w = "Позиция " + (q.get(0) +1)+ "   " + q.get(1) + "  штук";
+                                  //  Toast.makeText(getActivity().getApplicationContext(),w, Toast.LENGTH_SHORT).show();
+                                   // try {
+                                    //    Thread.sleep(1000);
+                                    //} catch (InterruptedException ex) {
+                                    //    throw new RuntimeException(ex);
+                                    //}
+                                // }
+                                Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                                NavController c = NavHostFragment.findNavController(navhost);
+                                c.navigate(R.id.action_CatalogFragment_to_CartFragment);
                                 break;
+                            case R.id.action_profile:
+                                System.out.println("Профиль");
+                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
                         }
                         return false;
                     }
