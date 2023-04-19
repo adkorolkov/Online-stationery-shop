@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.onlinestationeryshop.databinding.ActivityMainBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
 import com.example.onlinestationeryshop.databinding.FragmentInfoGoodBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,6 +44,7 @@ public class InfoGoodFragment extends Fragment {
     private ViewPager2 viewPager;
 
     private TextView count_cart;
+    private MainActivity mainActivity = new MainActivity();
 
 
     private ArrayList<Integer> images;
@@ -52,6 +54,7 @@ public class InfoGoodFragment extends Fragment {
     private String desc;
     private String name;
     private Integer price;
+    private ActivityMainBinding mBinding;
 
     private Server server = Server.getInstance();
 
@@ -102,7 +105,7 @@ public class InfoGoodFragment extends Fragment {
         TextView des = binding.description;
         TextView na = binding.text;
         TextView count = binding.count;
-        count_cart = binding.countCart;
+        count_cart = getActivity().findViewById(R.id.count_cart);
         updateCart();
         LinearLayout linearLayout = binding.tripleButton;
         ImageButton minus = binding.minus;
@@ -110,6 +113,11 @@ public class InfoGoodFragment extends Fragment {
         ImageButton addToCart = binding.addToCart;
         linearLayout.setVisibility(View.GONE);
         count.setTextSize(30);
+        if (server.isItemInCart(r)){
+            addToCart.setVisibility(View.GONE);
+            linearLayout.setVisibility(View.VISIBLE);
+            count.setText(server.getItemCount(r).toString());
+        }
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,49 +193,11 @@ public class InfoGoodFragment extends Fragment {
         catch (Exception e){
             System.out.println(e);
         }
-        BottomNavigationView bottomNavigationView = binding.bottomNavigation;
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                        NavController c = NavHostFragment.findNavController(navhost);
-                        switch (item.getItemId()) {
-                            case R.id.action_catalog:
-                                System.out.println("Каталог");
-                                c.navigate(R.id.action_InfoGoodFragment_to_Catalog_Fragment);
-                                break;
-                            case R.id.action_books:
-                                System.out.println("Заказы");
-                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.action_print:
-                                System.out.println("Печать");
-                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                                photoPickerIntent.setType("image/*");
-                                startActivityForResult(photoPickerIntent, 1);
-                                break;
-                            case R.id.action_cart:
-                                System.out.println("Корзина");
-                                c.navigate(R.id.action_InfoGoodFragment_to_CartFragment);
-                                break;
-                            case R.id.action_profile:
-                                System.out.println("Профиль");
-                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
-                        }
-                        return false;
-                    }
-                });
     }
 
 
     private void updateCart(){
-        if (server.getCartCount()>0) {
-            count_cart.setText(server.getCartCount().toString());
-        }
-        else{
-            count_cart.setText("");
-        }
+        mainActivity.updateCart(count_cart);
     }
 
     @Override

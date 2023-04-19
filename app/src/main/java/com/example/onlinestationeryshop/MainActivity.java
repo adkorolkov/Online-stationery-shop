@@ -38,38 +38,80 @@ public class MainActivity  extends AppCompatActivity {
     public Server getServer() {
         return server;
     }
-
-    private Server server;
-
+    public MainActivity MainActivity(){
+        return this;
+    }
     private ActivityMainBinding mBinding;
+    private TextView count_cart;
+
+    private Server server = Server.getInstance();
+
+
     //NavController navControllerStart = Navigation.findNavController(this, R.id.action_placeholder_to_CatalogFragment);
     //NavController navControllerInfo = Navigation.findNavController(this, R.id.action_CatalogFragment_to_InfoGoodFragment);
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ArrayList<Good> e = new ArrayList<>();
-        ArrayList<Integer> images_tr = new ArrayList<>();
-        images_tr.add(R.drawable.tractor);
-        images_tr.add(R.drawable.orange_will);
-        images_tr.add(R.drawable.red_will);
-        images_tr.add(R.drawable.will_gorizont);
-        ArrayList<Integer> images_mi = new ArrayList<>();
-        images_mi.add(R.drawable.mishe);
-        images_mi.add(R.drawable.orange_mi);
-        images_mi.add(R.drawable.heart_mi);
-        images_mi.add(R.drawable.circle_mi);
-        for (int i = 0; i < 20; i++) {
-            e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", 2*i, "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
-            e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 19000, "Колесо трактора", 2*i+1, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
-        }
-        server = Server.getInstance();
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        count_cart = mBinding.countCart;
+        updateCart(count_cart);
+        BottomNavigationView bottomNavigationView = mBinding.bottomNavigation;
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        Fragment navhost = getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                        NavController c = NavHostFragment.findNavController(navhost);
+                        switch (item.getItemId()) {
+                            case R.id.action_catalog:
+                                System.out.println("Каталог");
+                                try {
+                                    c.navigate(R.id.action_to_CatalogFragment);
+                                }
+                                catch (Exception e){
 
+                                }
+                                break;
+                            case R.id.action_books:
+                                System.out.println("Заказы");
+                                Toast.makeText(getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.action_print:
+                                System.out.println("Печать");
+                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                                photoPickerIntent.setType("image/*");
+                                startActivityForResult(photoPickerIntent, 1);
+                                break;
+                            case R.id.action_cart:
+                                try {
+                                    c.navigate(R.id.action_to_CartFragment);
+                                }
+                                catch (Exception e){
+
+                                }
+                                break;
+                            case R.id.action_profile:
+                                System.out.println("Профиль");
+                                Toast.makeText(getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
         setContentView(mBinding.getRoot());
 
+    }
+    public void updateCart(TextView count_carte){
+        if (server.getCartCount()>0) {
+            count_carte.setText(server.getCartCount().toString());
+        }
+        else{
+            System.out.println(count_carte+"vv");
+            count_carte.setText("");
+        }
     }
 }

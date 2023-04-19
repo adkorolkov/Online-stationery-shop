@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.onlinestationeryshop.databinding.ActivityMainBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCartBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -45,6 +46,8 @@ public class CartFragment extends Fragment {
     LinearLayout nullCart;
     LinearLayout payLayout;
     BottomNavigationView bottomNavigationView;
+    private ActivityMainBinding mBinding;
+    private MainActivity mainActivity = new MainActivity();
     private FragmentCartBinding binding;
     TextView price;
     ArrayList<Good>  listitem;
@@ -149,13 +152,12 @@ public class CartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         listitem = new ArrayList<Good>();
         cartLatout = binding.cartLayout;
+        count_cart = getActivity().findViewById(R.id.count_cart);
         nullCart = binding.nullcart;
         payLayout = binding.payLayout;
-        count_cart = binding.countCart;
         price = binding.priceAll;
         countQ = binding.countTotal;
         updateCart();
-        bottomNavigationView = binding.bottomNavigation;
         recyclerView = binding.cartList;
         fillData(server.getCartItems());
         updateAdapter(listitem);
@@ -169,37 +171,6 @@ public class CartFragment extends Fragment {
             }
         });
         getActivity().registerReceiver(receiver, new IntentFilter(adapter.CHANNEL));
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                        NavController c = NavHostFragment.findNavController(navhost);
-                        switch (item.getItemId()) {
-                            case R.id.action_catalog:
-                                System.out.println("Каталог");
-                                c.navigate(R.id.action_CartFragment_to_CatalogFragment);
-                                break;
-                            case R.id.action_books:
-                                System.out.println("Заказы");
-                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.action_print:
-                                System.out.println("Печать");
-                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                                photoPickerIntent.setType("image/*");
-                                startActivityForResult(photoPickerIntent, 1);
-                                break;
-                            case R.id.action_cart:
-                                break;
-                            case R.id.action_profile:
-                                System.out.println("Профиль");
-                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        return false;
-                    }
-                });
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

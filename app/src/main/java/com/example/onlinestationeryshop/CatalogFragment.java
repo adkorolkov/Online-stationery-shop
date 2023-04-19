@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.onlinestationeryshop.databinding.ActivityMainBinding;
 import com.example.onlinestationeryshop.databinding.FragmentCatalogBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -59,11 +60,12 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     private String mParam1;
     private String mParam2;
+    TextView count_cart;
+    private MainActivity mainActivity = new MainActivity();
 
 
     private FragmentCatalogBinding mbinding;
     private TextView nulladapter;
-    private TextView count_cart;
     ArrayList<ArrayList<Integer>> cart;
 
     private EditText editText;
@@ -108,7 +110,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
             bundle.putIntegerArrayList("images", server.getForInd(i).getImages());
             Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
             NavController c = NavHostFragment.findNavController(navhost);
-            c.navigate(R.id.action_CatalogFragment_to_InfoGoodFragment, bundle);
+            c.navigate(R.id.action_to_InfoGoodFragment, bundle);
         }
         catch (Exception e){
             System.out.println("bbb"+e);
@@ -232,26 +234,25 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     }
 
     private void updateCart(){
-        if (server.getCartCount()>0) {
-            count_cart.setText(server.getCartCount().toString());
+        try {
+            mainActivity.updateCart(count_cart);
         }
-        else{
-            count_cart.setText("");
+        catch (Exception e){
+            System.out.println(e.fillInStackTrace() + "qqq");
         }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         listitem  = new ArrayList<Good>();
+        count_cart = getActivity().findViewById(R.id.count_cart);
         nulladapter = mbinding.nullAdapter;
         editText = mbinding.search;
         back = mbinding.back;
         cancel = mbinding.cancel;
-        count_cart = mbinding.countCart;
         updateCart();
         search = mbinding.searchbt;
         recyclerView = mbinding.goodsrecyclerlist;
-        bottomNavigationView = mbinding.bottomNavigation;
         cart = new ArrayList<>();
         fillData(server.search());
         updateAdapter(listitem);
@@ -310,51 +311,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                 search(view);
             }
         });
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_catalog:
-                                System.out.println("Каталог");
-                                server.setSearch("");
-                                fillData(server.search());
-                                updateAdapter(listitem);
-                                break;
-                            case R.id.action_books:
-                                System.out.println("Заказы");
-                                Toast.makeText(getContext().getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.action_print:
-                                System.out.println("Печать");
-                                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                                photoPickerIntent.setType("image/*");
-                                startActivityForResult(photoPickerIntent, 1);
-                                break;
-                            case R.id.action_cart:
-                                System.out.println("Корзина");
-                                //for(int i=0;i< cart.size();i++){
-                                 //   ArrayList<Integer> q = cart.get(i);
-                                 //   String w = "Позиция " + (q.get(0) +1)+ "   " + q.get(1) + "  штук";
-                                  //  Toast.makeText(getActivity().getApplicationContext(),w, Toast.LENGTH_SHORT).show();
-                                   // try {
-                                    //    Thread.sleep(1000);
-                                    //} catch (InterruptedException ex) {
-                                    //    throw new RuntimeException(ex);
-                                    //}
-                                // }
-                                Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                                NavController c = NavHostFragment.findNavController(navhost);
-                                c.navigate(R.id.action_CatalogFragment_to_CartFragment);
-                                break;
-                            case R.id.action_profile:
-                                System.out.println("Профиль");
-                                Toast.makeText(getContext().getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
-                        }
-                        return false;
-                    }
-                });
     }
 
 
