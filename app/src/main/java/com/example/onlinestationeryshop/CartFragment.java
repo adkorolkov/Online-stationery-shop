@@ -45,9 +45,6 @@ public class CartFragment extends Fragment {
     LinearLayout cartLatout;
     LinearLayout nullCart;
     LinearLayout payLayout;
-    BottomNavigationView bottomNavigationView;
-    private ActivityMainBinding mBinding;
-    private MainActivity mainActivity = new MainActivity();
     private FragmentCartBinding binding;
     TextView price;
     ArrayList<Good>  listitem;

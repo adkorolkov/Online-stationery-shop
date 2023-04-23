@@ -110,6 +110,7 @@ public class InfoGoodFragment extends Fragment {
         LinearLayout linearLayout = binding.tripleButton;
         ImageButton minus = binding.minus;
         ImageButton plus = binding.plus;
+        TextView priceT = binding.price;
         ImageButton addToCart = binding.addToCart;
         linearLayout.setVisibility(View.GONE);
         count.setTextSize(30);
@@ -123,12 +124,14 @@ public class InfoGoodFragment extends Fragment {
             public void onClick(View v) {
                 if (count.getText().toString().equals("1")){
                     count.setText("");
+                    priceT.setTextColor(priceT.getContext().getResources().getColor(R.color.gray));
                     server.deleteCartItem(r);
                     updateCart();
                     linearLayout.setVisibility(View.GONE);
                     addToCart.setVisibility(View.VISIBLE);
                 }
                 else {
+                    //priceT.setText(Integer.toString(Integer.parseInt(priceT.getText().toString()) - price) + " ₽");
                     Integer i = Integer.parseInt(count.getText().toString()) - 1;
                     count.setText(i.toString());
                     server.changeCartItem(r, -1);
@@ -143,6 +146,8 @@ public class InfoGoodFragment extends Fragment {
                 if (i>999){
                     count.setTextSize(25);
                 }
+                String e = priceT.getText().toString();
+                //priceT.setText(Integer.toString(Integer.parseInt(priceT.getText().toString()) + price) + " ₽");
                 count.setText(i.toString());
                 server.changeCartItem(r, 1);
                 updateCart();
@@ -150,7 +155,6 @@ public class InfoGoodFragment extends Fragment {
         });
         na.setText(name);
         na.setTextSize(30);
-        TextView priceT = binding.price;
         priceT.setText(price.toString() + " ₽");
         priceT.setTextSize(20);
         des.setText(desc);

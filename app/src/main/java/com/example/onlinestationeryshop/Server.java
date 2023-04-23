@@ -1,6 +1,7 @@
 package com.example.onlinestationeryshop;
 
 import android.util.Pair;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +27,12 @@ public class Server {
         images_mi.add(R.drawable.orange_mi);
         images_mi.add(R.drawable.heart_mi);
         images_mi.add(R.drawable.circle_mi);
-        int[] a = {1,2};
-
+        ArrayList<Integer> images_me = new ArrayList<>();
+        images_me.add(R.drawable.meme_start);
+        images_me.add(R.drawable.meme1);
+        images_me.add(R.drawable.meme2);
+        images_me.add(R.drawable.meme3);
+        int[] a = {1,2,3};
         for (int i = 0; i < 50; i++) {
             java.util.Random random = new java.util.Random();
             int random_computer_card = random.nextInt(a.length);
@@ -35,7 +40,10 @@ public class Server {
                 e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", i, "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
             }
             else if (random_computer_card==1){
-                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 19000, "Колесо трактора", i, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
+                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 90000, "Колесо трактора", i, "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
+            }
+            else if (random_computer_card==2){
+                e.add(new Good(R.drawable.meme_start, "Мемы жёсткие для жёсткого вкида на паре", 200, "Мемы жёсткие", i, "Если вам хочется fuck, то нужно срочно покупать это для жёсткого вкида. Всегда ждём снова", images_me));
             }
         }
         goods = e;

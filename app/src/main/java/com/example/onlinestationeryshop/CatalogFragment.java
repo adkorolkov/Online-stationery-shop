@@ -61,7 +61,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     private String mParam1;
     private String mParam2;
     TextView count_cart;
-    private MainActivity mainActivity = new MainActivity();
+        private MainActivity mainActivity = new MainActivity();
 
 
     private FragmentCatalogBinding mbinding;

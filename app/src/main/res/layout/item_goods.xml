@@ -51,5 +51,12 @@
         android:layout_height="100dp">
 
     </ImageView>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/line"
+        android:layout_below="@id/icon"
+        android:background="@drawable/good_item"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
 
 </RelativeLayout>

@@ -9,6 +9,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -96,7 +97,12 @@ public class MainActivity  extends AppCompatActivity {
                                 break;
                             case R.id.action_profile:
                                 System.out.println("Профиль");
-                                Toast.makeText(getApplicationContext(), "Профиль пока не работает", Toast.LENGTH_SHORT).show();
+                                try{
+                                    c.navigate(R.id.action_to_Profile);
+                                }
+                                catch (Exception e){
+
+                                }
                                 break;
                         }
                         return false;
