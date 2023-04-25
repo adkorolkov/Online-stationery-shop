@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -61,7 +62,8 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     private String mParam1;
     private String mParam2;
     TextView count_cart;
-        private MainActivity mainActivity = new MainActivity();
+    private CatalogViewModel mViewModel;
+    private MainActivity mainActivity = new MainActivity();
 
 
     private FragmentCatalogBinding mbinding;
@@ -70,7 +72,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     private EditText editText;
 
-    Server server = Server.getInstance();
+    Server server;
 
 
     BottomNavigationView bottomNavigationView;
@@ -83,19 +85,25 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
 
     private void updateAdapter(ArrayList<Good>  listitem){
-        if (listitem.size()>0) {
-            nulladapter.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            goodAdapter = new GoodRycycleAdapter(getContext(), listitem, this::onClick);
-            recyclerView.setAdapter(goodAdapter);
+        try {
+            System.out.println(listitem.size() + "eeee");
+            if (listitem.size() > 0) {
+                nulladapter.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                goodAdapter = new GoodRycycleAdapter(getContext(), listitem, this::onClick);
+                recyclerView.setAdapter(goodAdapter);
 
+            } else {
+                goodAdapter = new GoodRycycleAdapter(getContext(), listitem, this::onClick);
+                recyclerView.setVisibility(View.GONE);
+                nulladapter.setVisibility(View.VISIBLE);
+            }
+            cancel.setVisibility(View.GONE);
         }
-        else{
-            recyclerView.setVisibility(View.GONE);
-            nulladapter.setVisibility(View.VISIBLE);
+        catch (Exception e){
+            System.out.println(e);
         }
-        cancel.setVisibility(View.GONE);
     }
 
     @SuppressLint("ResourceType")
@@ -135,6 +143,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         String text = editText.getText().toString();
         text = text.toLowerCase();
         server.setSearch(text);
+        mViewModel.putInSearch(text);
         editText.setText("");
         hideKeyboardFrom(view.getContext(),view);
         FocusOff(editText);
@@ -178,6 +187,8 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
+                server = Server.getInstance(getActivity().getApplicationContext());
+                System.out.println(server+"sss");
                 System.out.println(intent.getStringExtra(goodAdapter.INFO) +  "  " +   intent.getStringExtra(goodAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
@@ -235,11 +246,23 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     private void updateCart(){
         try {
-            mainActivity.updateCart(count_cart);
+            mainActivity.updateCart(count_cart, getActivity().getApplicationContext());
         }
         catch (Exception e){
             System.out.println(e.fillInStackTrace() + "qqq");
         }
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        server = Server.getInstance(getActivity().getApplicationContext());
+        fillData(server.search());
+        updateAdapter(listitem);
+        System.out.println(goodAdapter+"ttt");
+        System.out.println(goodAdapter.CHANNEL+"ttt");
+        getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
     }
 
     @Override
@@ -254,9 +277,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         search = mbinding.searchbt;
         recyclerView = mbinding.goodsrecyclerlist;
         cart = new ArrayList<>();
-        fillData(server.search());
-        updateAdapter(listitem);
-        getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -311,6 +331,14 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
                 search(view);
             }
         });
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getActivity().getApplication()).create(CatalogViewModel.class);
+        // TODO: Use the ViewModel
     }
 
 

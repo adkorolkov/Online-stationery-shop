@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +43,7 @@ public class CartFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private CartFragmentViewModel mViewModel;
     LinearLayout cartLatout;
     LinearLayout nullCart;
     LinearLayout payLayout;
@@ -50,7 +52,7 @@ public class CartFragment extends Fragment {
     ArrayList<Good>  listitem;
     private TextView count_cart;
     TextView countQ;
-    private Server server = Server.getInstance();
+    private Server server;
     private CartRecuclerViewAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -92,6 +94,7 @@ public class CartFragment extends Fragment {
         }
     }
     private void updateCart(){
+        server = Server.getInstance(getActivity().getApplicationContext());
         if (server.getCartCount()>0) {
             cartLatout.setVisibility(View.VISIBLE);
             nullCart.setVisibility(View.GONE);
@@ -147,6 +150,7 @@ public class CartFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        server = Server.getInstance(getActivity().getApplicationContext());
         listitem = new ArrayList<Good>();
         cartLatout = binding.cartLayout;
         count_cart = getActivity().findViewById(R.id.count_cart);
@@ -162,7 +166,9 @@ public class CartFragment extends Fragment {
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext().getApplicationContext(), "Оплачено, ебись оно конём", Toast.LENGTH_SHORT).show();
+                mViewModel.addToOrder();
+                mViewModel.sendMessage();
+                Toast.makeText(getContext().getApplicationContext(), "Оплачено, следите за статусом заказа", Toast.LENGTH_SHORT).show();
                 server.setNullCart();
                 updateCart();
             }
@@ -175,5 +181,12 @@ public class CartFragment extends Fragment {
         binding = FragmentCartBinding.inflate(inflater, container, false);
         // Inflate the layout for this fragment
         return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getActivity().getApplication()).create(CartFragmentViewModel.class);
+        // TODO: Use the ViewModel
     }
 }

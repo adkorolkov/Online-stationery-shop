@@ -4,6 +4,14 @@ plugins {
 
 
 android {
+    signingConfigs {
+        release {
+        storeFile file('/home/akorolkov/Documents/keys for android projects/Shopkey.jks')
+            storePassword 'Ffffgggg1'
+            keyAlias 'key0'
+            keyPassword 'Ffffgggg1'
+        }
+    }
     namespace 'com.example.onlinestationeryshop'
     compileSdk 33
     buildFeatures {
@@ -17,6 +25,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
 
     buildTypes {

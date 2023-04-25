@@ -32,7 +32,7 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
     public String CHANNEL = "CART_DELETE";
     public  String INFO = "DETELE";
     private Handler h;
-    private Server server = Server.getInstance();
+    private Server server;
     Context ctx;
 
 
@@ -47,6 +47,7 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
         }
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        server = Server.getInstance(ctx.getApplicationContext());
     }
 
     public void updateData(ArrayList<Good> newData) {

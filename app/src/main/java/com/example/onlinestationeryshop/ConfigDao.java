@@ -19,9 +19,6 @@ public interface ConfigDao {
 
     @Query("DELETE FROM config WHERE name = :name")
     void delete(String name);
-
-
-
     @Update
     void update(Config config);
 

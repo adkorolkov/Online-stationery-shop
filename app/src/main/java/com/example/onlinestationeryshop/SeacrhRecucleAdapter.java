@@ -1,6 +1,5 @@
 package com.example.onlinestationeryshop;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -11,33 +10,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.onlinestationeryshop.databinding.ImageItemBinding;
 import com.example.onlinestationeryshop.databinding.ItemGoodsBinding;
+import com.example.onlinestationeryshop.databinding.SeacrhHistoryItemBinding;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.RecyclerViewItemViewHolder> {
-
+public class SeacrhRecucleAdapter extends RecyclerView.Adapter<SeacrhRecucleAdapter.RecyclerViewItemViewHolder> {
 
 
-    public String CHANNEL = "CART_ADD";
-    public  String INFO = "ADD_TO_CART";
+
+    public String CHANNEL = "SEARCH_THIS";
+    public  String INFO = "SEARCH_THIS_ITEM";
     private Handler h;
     Context ctx;
 
-    private OnItemClickListener listener;
+    private OnSeacrhItemClickListener listener;
 
     LayoutInflater lInflater;
-    ArrayList<Good> objects;
+    ArrayList<History> objects;
 
-    public GoodRycycleAdapter(Context context, ArrayList<Good> goods, OnItemClickListener listene) {
+    public SeacrhRecucleAdapter(Context context, ArrayList<History> goods, OnSeacrhItemClickListener listene) {
         ctx = context;
         objects = goods;
         lInflater = (LayoutInflater) ctx
@@ -45,7 +42,7 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         listener = listene;
     }
 
-    public void updateData(ArrayList<Good> newData) {
+    public void updateData(ArrayList<History> newData) {
         objects = newData;
 
         notifyDataSetChanged();
@@ -54,7 +51,7 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
     @NonNull
     @Override
     public RecyclerViewItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemGoodsBinding mBinding = ItemGoodsBinding.inflate(LayoutInflater.from(parent.getContext()));
+        SeacrhHistoryItemBinding mBinding = SeacrhHistoryItemBinding.inflate(LayoutInflater.from(parent.getContext()));
 
         return new RecyclerViewItemViewHolder(mBinding.getRoot());
     }
@@ -71,44 +68,19 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         };
         // используем созданные, но не используемые view
 
-        Good p = getGood(holder.getAdapterPosition());
+        History p = getSeacrh(holder.getAdapterPosition());
+        String value = p.getQuer();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onClick(p.getId());
+                listener.onClick(value);
             }
         });
 
         // заполняем View в пункте списка данными из товаров: наименование, цена
         // и картинка
-        String name = p.getName();
-        if(name.length() > 15) {
-            String h = "";
-            for (int i = 0; i < 13; i++) {
-                h += name.charAt(i);
-            }
-            name = h + "...";
-        }
-        ((TextView) holder.binding.description).setText(p.getDescriptionShort() + "");
-        ((TextView) holder.binding.price).setText(p.getPrice() + " ₽");
-        ((TextView) holder.binding.name).setText(name);
-        ((ImageView) holder.binding.icon).setImageResource(p.getImage_prev());
-        ((Button) holder.binding.addToCart).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Server server = Server.getInstance(ctx.getApplicationContext());
-                if(server.isItemInCart(p.getId())){
-                    server.changeCartItem(p.getId(), 1);
-                }
-                else {
-                    server.addToCart(p.getId(), 1);
-                }
-                System.out.println("Нажата клавиша добавления в корзину " + (holder.getAdapterPosition()+1));
-                Message msg = new Message();
-                msg.obj = Integer.toString(p.getId());
-                h.sendMessage(msg);
-            }
-        });
+
+        ((TextView) holder.binding.search).setText(value+"");
     }
 
     @Override
@@ -116,8 +88,8 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         return objects.size();
     }
 
-    Good getGood(int position) {
-        return ((Good) getItem(position));
+    History getSeacrh(int position) {
+        return ((History) getItem(position));
     }
 
     public Object getItem(int position) {
@@ -130,12 +102,12 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
     }
 
     class RecyclerViewItemViewHolder extends RecyclerView.ViewHolder {
-        public ItemGoodsBinding binding;
+        public SeacrhHistoryItemBinding binding;
 
         public RecyclerViewItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            binding = ItemGoodsBinding.bind(itemView);
+            binding = SeacrhHistoryItemBinding.bind(itemView);
         }
     }
 }

@@ -8,7 +8,7 @@ import androidx.room.Room;
 
 public class ProfileViewModel extends AndroidViewModel {
 
-    private Server server = Server.getInstance();
+    private Server server = Server.getInstance(getApplication().getApplicationContext());
     public ProfileViewModel(@NonNull Application application) {
         super(application);
     }

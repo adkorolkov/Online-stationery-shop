@@ -2,6 +2,8 @@ package com.example.onlinestationeryshop;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.onlinestationeryshop.databinding.FragmentProfileBinding;
@@ -57,6 +60,24 @@ public class ProfileFragment extends Fragment {
                 Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
                 NavController c = NavHostFragment.findNavController(navhost);
                 c.navigate(R.id.action_to_EnterFragment);
+            }
+        });
+        LinearLayout historyOfSearch = binding.historySearch;
+        historyOfSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                NavController c = NavHostFragment.findNavController(navhost);
+                c.navigate(R.id.action_to_HistotySearchFragment);
+            }
+        });
+        LinearLayout tecSupport = binding.technicalSupport;
+        tecSupport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = "+79267967720";
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                startActivity(intent);
             }
         });
     }

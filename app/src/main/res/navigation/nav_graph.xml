@@ -34,7 +34,10 @@
         android:name="com.example.onlinestationeryshop.CatalogFragment"
         android:label="fragment_catalog"
         tools:layout="@layout/fragment_catalog" >
-    <action
+        <action
+            android:id="@+id/action_to_OrderFragment"
+            app:destination="@id/OrderFragment"/>
+        <action
         android:id="@+id/action_to_Profile"
         app:destination="@id/ProfileFragment" />
     <action
@@ -50,6 +53,9 @@
         android:name="com.example.onlinestationeryshop.InfoGoodFragment"
         android:label="fragment_info_good"
         tools:layout="@layout/fragment_info_good" >
+        <action
+            android:id="@+id/action_to_OrderFragment"
+            app:destination="@id/OrderFragment"/>
         <action
             android:id="@id/action_to_Profile"
             app:destination="@id/ProfileFragment"></action>
@@ -69,6 +75,9 @@
         android:label="cart_fragment"
         tools:layout="@layout/fragment_cart">
         <action
+            android:id="@+id/action_to_OrderFragment"
+            app:destination="@id/OrderFragment"/>
+        <action
             android:id="@+id/action_to_CatalogFragment"
             app:destination="@id/CatalogFragment"></action>
         <action
@@ -81,19 +90,52 @@
         android:name="com.example.onlinestationeryshop.ProfileFragment"
         android:label="fragment_profile">
         <action
+            android:id="@+id/action_to_OrderFragment"
+            app:destination="@id/OrderFragment"/>
+        <action
             android:id="@id/action_to_CatalogFragment"
             app:destination="@id/CatalogFragment"></action>
         <action
             android:id="@id/action_to_CartFragment"
             app:destination="@id/CartFragment"/>
         <action
-            android:id="@id/action_to_InfoGoodFragment"
-            app:destination="@id/InfoGoodFragment" />
+            android:id="@+id/action_to_HistotySearchFragment"
+            app:destination="@id/HistotySearchFragment" />
         <action
             android:id="@+id/action_to_EnterFragment"
             app:destination="@id/EnterFragment"/>
-
-
-
     </fragment>
+    <fragment
+        android:id="@+id/HistotySearchFragment"
+        android:name="com.example.onlinestationeryshop.HistorySearchFragment"
+        android:label="fragment_history_seacrh">
+        <action
+            android:id="@+id/action_to_OrderFragment"
+            app:destination="@id/OrderFragment"/>
+        <action
+            android:id="@id/action_to_CatalogFragment"
+            app:destination="@id/CatalogFragment"></action>
+        <action
+            android:id="@id/action_to_CartFragment"
+            app:destination="@id/CartFragment"/>
+        <action
+            android:id="@id/action_to_Profile"
+            app:destination="@id/ProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/OrderFragment"
+        android:name="com.example.onlinestationeryshop.OrdersFragment"
+        android:label="fragment_orderlist">
+        <action
+            android:id="@id/action_to_CatalogFragment"
+            app:destination="@id/CatalogFragment"/>
+        <action
+            android:id="@+id/action_to_Profile"
+            app:destination="@id/ProfileFragment" />
+        <action
+            android:id="@+id/action_to_CartFragment"
+            app:destination="@id/CartFragment"/>
+    </fragment>
+
 </navigation>

@@ -7,9 +7,11 @@
     tools:context=".RegistrationFragment">
 
     <TextView
+        android:textSize="30dp"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello" />
+        android:text="Регистрация" />
     <EditText
         android:id="@+id/email"
         android:hint="Электронная почта"

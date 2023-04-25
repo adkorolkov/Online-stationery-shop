@@ -56,7 +56,7 @@ public class InfoGoodFragment extends Fragment {
     private Integer price;
     private ActivityMainBinding mBinding;
 
-    private Server server = Server.getInstance();
+    private Server server;
 
     private Bundle bundle;
 
@@ -100,6 +100,7 @@ public class InfoGoodFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        server = Server.getInstance(getActivity().getApplicationContext());
         Integer r = indexGood;
         System.out.println("InfoGoodFragment  " + r.toString());
         TextView des = binding.description;
@@ -201,7 +202,7 @@ public class InfoGoodFragment extends Fragment {
 
 
     private void updateCart(){
-        mainActivity.updateCart(count_cart);
+        mainActivity.updateCart(count_cart, getActivity().getApplicationContext());
     }
 
     @Override

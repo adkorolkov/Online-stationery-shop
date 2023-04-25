@@ -45,7 +45,7 @@ public class MainActivity  extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private TextView count_cart;
 
-    private Server server = Server.getInstance();
+    private Server server;
 
 
     //NavController navControllerStart = Navigation.findNavController(this, R.id.action_placeholder_to_CatalogFragment);
@@ -58,8 +58,9 @@ public class MainActivity  extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        server =  Server.getInstance(getApplicationContext());
         count_cart = mBinding.countCart;
-        updateCart(count_cart);
+        updateCart(count_cart, getApplication().getApplicationContext());
         BottomNavigationView bottomNavigationView = mBinding.bottomNavigation;
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -79,7 +80,12 @@ public class MainActivity  extends AppCompatActivity {
                                 break;
                             case R.id.action_books:
                                 System.out.println("Заказы");
-                                Toast.makeText(getApplicationContext(), "Заказы пока не работают", Toast.LENGTH_SHORT).show();
+                                try {
+                                    c.navigate(R.id.action_to_OrderFragment);
+                                }
+                                catch (Exception e){
+
+                                }
                                 break;
                             case R.id.action_print:
                                 System.out.println("Печать");
@@ -111,7 +117,10 @@ public class MainActivity  extends AppCompatActivity {
         setContentView(mBinding.getRoot());
 
     }
-    public void updateCart(TextView count_carte){
+    public void updateCart(TextView count_carte, Context context){
+        System.out.println(context+"gg");
+        server = Server.getInstance(context);
+        System.out.println("serveraa"+server);
         if (server.getCartCount()>0) {
             count_carte.setText(server.getCartCount().toString());
         }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HistorySearchFragment">
+
+    <TextView
+        android:textSize="30dp"
+        android:id="@+id/nullSearch"
+        android:layout_marginTop="300dp"
+        android:gravity="center"
+        android:text="История поиска пуста"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </TextView>
+    <LinearLayout
+        android:layout_above="@id/deleteHistory"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:gravity="center"
+        android:textSize="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="История поиска" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searc_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/deleteHistory"
+        android:layout_alignParentBottom="true"
+        android:textSize="20dp"
+        android:text="Очистить историю поиска"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </Button>
+</RelativeLayout>
