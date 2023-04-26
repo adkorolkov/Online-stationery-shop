@@ -50,16 +50,18 @@ public class CartFragmentViewModel  extends AndroidViewModel {
             @Override
             public void run() {
                 Order order1 = orderDao.getByID((int) orderId);
-                order1.status = "Готов";
-                orderDao.update(order1);
-                h = new Handler(Looper.getMainLooper()){
-                    @Override
-                    public void handleMessage(@NonNull Message msg) {
-                        Intent i = new Intent(CHANNEL); // интент для отправки ответа
-                        i.putExtra(INFO, msg.obj.toString()); // добавляем в интент данные
-                        ctx.sendBroadcast(i); // рассылаем
-                    }
-                };
+                if (!order1.status.equals("Отменён")) {
+                    order1.status = "Готов";
+                    orderDao.update(order1);
+                    h = new Handler(Looper.getMainLooper()) {
+                        @Override
+                        public void handleMessage(@NonNull Message msg) {
+                            Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                            i.putExtra(INFO, msg.obj.toString()); // добавляем в интент данные
+                            ctx.sendBroadcast(i); // рассылаем
+                        }
+                    };
+                }
                 Message msg = new Message();
                 msg.obj = "change";
                 h.sendMessage(msg);
