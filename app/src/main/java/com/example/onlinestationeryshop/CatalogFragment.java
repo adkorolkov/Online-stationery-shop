@@ -115,7 +115,12 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
             bundle.putString("description", server.getForInd(i).getDescription());
             bundle.putString("name", server.getForInd(i).getName());
             bundle.putInt("price", server.getForInd(i).getPrice());
-            bundle.putIntegerArrayList("images", server.getForInd(i).getImages());
+            ArrayList<Integer> images = new ArrayList<>();
+            List<Integer> r = server.getForInd(i).getImages();
+            for (int x=0;x<r.size();x++){
+                images.add(r.get(x));
+            }
+            bundle.putIntegerArrayList("images", images);
             Fragment navhost = getParentFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
             NavController c = NavHostFragment.findNavController(navhost);
             c.navigate(R.id.action_to_InfoGoodFragment, bundle);

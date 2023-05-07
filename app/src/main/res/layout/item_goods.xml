@@ -1,62 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
+    android:paddingHorizontal="10dp"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center_vertical">
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:padding="3dp"
+        android:background="@drawable/good_item_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:background="@drawable/good_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    <ImageView
+        android:padding="7dp"
+        android:foregroundGravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/icon"
+        android:scaleType="fitXY"
+        android:layout_width="92dp"
+        android:layout_height="92dp">
+
+    </ImageView>
     <LinearLayout
+        android:layout_toRightOf="@id/icon"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:paddingLeft="20dp"
+        android:layout_toRightOf="@id/icon"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView
-        android:layout_marginLeft="100dp"
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" android:textSize="20sp" />
+        android:layout_weight="1"
+        android:textSize="20sp" />
 
-    <TextView
-        android:layout_marginLeft="15dp"
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" android:textSize="20sp" />
     </LinearLayout>
+        <TextView
+            android:paddingLeft="10dp"
+            android:id="@+id/description"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textSize="10sp" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <TextView
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="50dp"
-        android:id="@+id/description"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" android:textSize="10sp" />
+        <TextView
+            android:gravity="center"
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp" />
     <Button
+        android:layout_weight="1"
         android:drawableRight="@drawable/add_to_cart"
         android:background="@android:color/transparent"
-        android:layout_marginTop="50dp"
         android:id="@+id/add_to_cart"
         android:layout_width="45dp"
         android:layout_height="45dp">
     </Button>
     </LinearLayout>
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="100dp"
-        android:layout_height="100dp">
-
-    </ImageView>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:id="@+id/line"
-        android:layout_below="@id/icon"
-        android:background="@drawable/good_item"
+    </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
-
-</RelativeLayout>
+        android:layout_height="10dp"></Space>
+</LinearLayout>

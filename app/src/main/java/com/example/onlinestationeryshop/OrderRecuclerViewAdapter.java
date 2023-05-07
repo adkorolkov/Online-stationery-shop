@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,7 +79,22 @@ public class OrderRecuclerViewAdapter extends RecyclerView.Adapter<OrderRecucler
         ((TextView) holder.binding.orderid).setText("Заказ №" + Integer.toString(p.id));
         ((TextView) holder.binding.price).setText(p.getPrice().toString() + " ₽");
         ((TextView) holder.binding.status).setText(p.status);
-        ((TextView) holder.binding.time).setText(p.time);
+        String q = p.time;
+        String res = "";
+        Server server = Server.getInstance(ctx);
+        if (!q.substring(0,4).equals(server.getTime().substring(0,4))){
+            res+=q.substring(0,4) + " ";
+        }
+        if (q.substring(8,9).equals("0")) {
+            res += q.substring(9, 10) + " ";
+        }
+        else{
+            res += q.substring(8, 10) + " ";
+        }
+        String e = q.substring(5,7);
+        res+=server.getMonth(q.substring(5,7)) + " ";
+        res+=q.substring(11,16);
+        ((TextView) holder.binding.time).setText(res);
         if (p.status.equals("Отменён") || p.status.equals("Получен")){
             holder.binding.canselOrder.setVisibility(View.GONE);
             holder.binding.getOrder.setVisibility(View.GONE);

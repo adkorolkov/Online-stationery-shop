@@ -25,7 +25,6 @@ public class EnterViewModel extends AndroidViewModel {
         ConfigDao configDao = db.configDao();
         System.out.println("get db");
         Config is = configDao.getByName("enter");
-        System.out.println(is.value+"issss");
         if (is!=null){
             if(is.value.equals("true")) {
                 return true;

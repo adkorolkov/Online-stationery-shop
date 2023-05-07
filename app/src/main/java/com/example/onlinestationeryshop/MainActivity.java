@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.onlinestationeryshop.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 
 import java.util.ArrayList;
 
@@ -90,7 +91,7 @@ public class MainActivity  extends AppCompatActivity {
                             case R.id.action_print:
                                 System.out.println("Печать");
                                 Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                                photoPickerIntent.setType("image/*");
+                                photoPickerIntent.setType("file/*");
                                 startActivityForResult(photoPickerIntent, 1);
                                 break;
                             case R.id.action_cart:

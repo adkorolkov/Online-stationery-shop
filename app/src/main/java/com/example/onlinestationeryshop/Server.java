@@ -1,20 +1,39 @@
 package com.example.onlinestationeryshop;
 
 import android.content.Context;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.room.Room;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Server {
 
+
+    private Context context;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
     private static Server instance;
     private String search_n = "";
     private DataBase db;
+    private String UserKey = "User";
+    private String GoodKey  = "Good";
 
 
     private ArrayList<Good> createGoods(){
+
         ArrayList<Good> e = new ArrayList<>();
         ArrayList<Integer> images_tr = new ArrayList<>();
         images_tr.add(R.drawable.tractor);
@@ -36,13 +55,13 @@ public class Server {
             java.util.Random random = new java.util.Random();
             int random_computer_card = random.nextInt(a.length);
             if (random_computer_card==0){
-                e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi));
+                e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi,i));
             }
             else if (random_computer_card==1){
-                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 90000, "Колесо трактора", "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr));
+                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 90000, "Колесо трактора", "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr,i));
             }
             else if (random_computer_card==2){
-                e.add(new Good(R.drawable.meme_start, "Мемы жёсткие для жёсткого вкида на паре", 200, "Мемы жёсткие", "Если вам хочется fuck, то нужно срочно покупать это для жёсткого вкида. Всегда ждём снова", images_me));
+                e.add(new Good(R.drawable.meme_start, "Мемы жёсткие для жёсткого вкида на паре", 200, "Мемы жёсткие", "Если вам хочется fuck, то нужно срочно покупать это для жёсткого вкида. Всегда ждём снова", images_me,i));
             }
         }
         return e;
@@ -50,15 +69,24 @@ public class Server {
 
 
     private void fillGoods(GoodDao goodDao){
+        Log.d("qqq", "Initializate firebase");
         ArrayList<Good> g = createGoods();
+        FirebaseApp.initializeApp(context);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        Log.d("qqq","firebase"+firebaseDatabase);
+        databaseReference= firebaseDatabase.getReference(GoodKey);
+        Log.d("qqq","Reference"+databaseReference);
         for (int i=0;i<g.size();i++){
+            Good good = g.get(i);
+            databaseReference.child(Integer.toString(good.getIdg())).setValue(good);
             goodDao.insert(g.get(i));
         }
     }
 
 
-    private Server(Context context){
-        db = Room.databaseBuilder(context, DataBase.class, "stationery").allowMainThreadQueries().build();
+    private Server(Context contex){
+        context = contex;
+        db = Room.databaseBuilder(contex, DataBase.class, "stationery").allowMainThreadQueries().build();
         GoodDao goodDao = db.goodDao();
         if (goodDao.getCount()==0){
             fillGoods(goodDao);
@@ -180,6 +208,39 @@ public class Server {
     }
 
 
+    public String getTime() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now);
+    }
+
+    public String getMonth(String i){
+        HashMap<String, String> month = new HashMap<>();
+        month.put("01", "января");
+        month.put("02","февраля");
+        month.put("03","марта");
+        month.put("04","апреля");
+        month.put("05","мая");
+        month.put("06","июня");
+        month.put("07","июля");
+        month.put("08","августа");
+        month.put("09","сентября");
+        month.put("10","октября");
+        month.put("11","ноября");
+        month.put("12","декабря");
+        return month.get(i);
+    }
+
+
+    public void changeStatusOrder(String status, int id){
+        OrderDao orderDao = db.orderDao();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now));
+        Order order = orderDao.getByID(id);
+        order.status = status;
+        orderDao.update(order);
+    }
 
     public Good getForInd(int i){
 

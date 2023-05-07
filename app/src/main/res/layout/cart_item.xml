@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:orientation="horizontal"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical">
+    <LinearLayout
+        android:layout_marginHorizontal="20dp"
+        android:layout_gravity="center_horizontal"
+        android:padding="3dp"
+        android:background="@drawable/good_item"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <ImageView
+        android:layout_weight="1"
+        android:paddingVertical="2dp"
+        android:layout_marginLeft="25dp"
+        android:scaleType="fitXY"
         android:id="@+id/icon"
-        android:layout_width="150dp"
-        android:layout_height="150dp">
+        android:layout_width="100dp"
+        android:layout_height="100dp">
 
     </ImageView>
     <LinearLayout
+        android:layout_marginRight="10dp"
+        android:layout_weight="25"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="100dp">
     <LinearLayout
         android:layout_weight="1"
         android:orientation="vertical"
@@ -77,4 +91,9 @@
             android:src="@drawable/pluc_icon"></ImageButton>
     </LinearLayout>
     </LinearLayout>
+    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp">
+    </Space>
 </LinearLayout>

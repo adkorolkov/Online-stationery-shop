@@ -104,14 +104,14 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
             public void onClick(View v) {
                 if (holder.binding.countI.getText().toString().equals("2")) {
                     holder.binding.minusC.setClickable(false);
-                    holder.binding.minusC.setBackgroundColor(holder.binding.minusC.getContext().getResources().getColor(R.color.gray));
+                    holder.binding.minusC.setVisibility(View.GONE);
                     Message msg = new Message();
                     msg.obj = Integer.toString(-1);
                     h.sendMessage(msg);
                     Integer i = Integer.parseInt(holder.binding.countI.getText().toString()) - 1;
                     holder.binding.countI.setText(i.toString());
                     server.changeCartItem(p.getId(), -1);
-                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())));
+                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
                 } else {
                     Message msg = new Message();
                     msg.obj = Integer.toString(-1);
@@ -119,12 +119,12 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
                     Integer i = Integer.parseInt(holder.binding.countI.getText().toString()) - 1;
                     holder.binding.countI.setText(i.toString());
                     server.changeCartItem(p.getId(), -1);
-                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())));
+                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
                 }
             }
         });
         if (server.getItemCount(p.getId())==1) {
-            holder.binding.minusC.setBackgroundColor(holder.binding.minusC.getContext().getResources().getColor(R.color.gray));
+            holder.binding.minusC.setVisibility(View.GONE);
             holder.binding.minusC.setClickable(false);
         }
         ((ImageButton) holder.binding.cansel).setOnClickListener(new View.OnClickListener() {
@@ -146,11 +146,11 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
                 System.out.println("i== " + i);
                 if (i==2){
                     holder.binding.minusC.setClickable(true);
-                    holder.binding.minusC.setBackgroundColor(holder.binding.minusC.getContext().getResources().getColor(R.color.prozr));
+                    holder.binding.minusC.setVisibility(View.VISIBLE);
                 }
                 holder.binding.countI.setText(i.toString());
                 server.changeCartItem(p.getId(), 1);
-                holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())));
+                holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
 
             }
         });

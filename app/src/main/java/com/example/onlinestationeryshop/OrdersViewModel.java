@@ -20,14 +20,8 @@ public class OrdersViewModel extends AndroidViewModel {
     // TODO: Implement the ViewModel
 
     public void changeStatusOrder(String status, int id){
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        OrderDao orderDao = db.orderDao();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(dtf.format(now));
-        Order order = orderDao.getByID(id);
-        order.status = status;
-        orderDao.update(order);
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.changeStatusOrder(status, id);
     }
 
     public List<FilledOrder> getFilledOrders(){

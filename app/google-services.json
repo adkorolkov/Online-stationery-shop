@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "407860475991",
+    "firebase_url": "https://online-stationery-shop-fa650-default-rtdb.firebaseio.com",
+    "project_id": "online-stationery-shop-fa650",
+    "storage_bucket": "online-stationery-shop-fa650.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407860475991:android:04ed15023eafca86224b12",
+        "android_client_info": {
+          "package_name": "com.example.onlinestationeryshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407860475991-3r0hqjbtm97jllh1tqsc6lajfr2l0jcs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKKY18m6Vwlt3iHUuRWj2wJelUXltOIGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407860475991-3r0hqjbtm97jllh1tqsc6lajfr2l0jcs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,9 +6,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 @Entity(tableName = "good")
+@IgnoreExtraProperties
 public class Good {
 
     public String getDescription() {
@@ -59,7 +62,7 @@ public class Good {
     private int image_prev;
 
 
-    public ArrayList<Integer>  getImages() {
+    public List<Integer>  getImages() {
         ArrayList<Integer> q = new ArrayList<>();
         String[] w = imagelist.split(",");
         for (int i=0;i<w.length;i++){
@@ -95,13 +98,23 @@ public class Good {
     @ColumnInfo(name = "id")
     private int id;
 
+    private int idg;
 
-    public Good(int imag,  String desshort, Integer pr, String nam,String des, ArrayList<Integer> r){
+    public void setIdg(int idg) {
+        this.idg = idg;
+    }
+
+    public int getIdg() {
+        return idg;
+    }
+
+    public Good(int imag, String desshort, Integer pr, String nam, String des, ArrayList<Integer> r, int q){
         image_prev = imag;
         description = des;
         price = pr;
         name = nam;
         descriptionShort = desshort;
+        idg = q;
         String t = "";
         for (int w=0;w<r.size()-1;w++){
             t+=r.get(w).toString()+",";
