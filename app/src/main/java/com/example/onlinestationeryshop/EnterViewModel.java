@@ -20,6 +20,7 @@ public class EnterViewModel extends AndroidViewModel {
 
 
     public boolean IsEntered(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
         DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
         System.out.println("start IsEntered");
         ConfigDao configDao = db.configDao();
@@ -46,6 +47,8 @@ public class EnterViewModel extends AndroidViewModel {
         }
         System.out.println(configEmail + " aboba");
         if (configEmail.value.equals(email)) {
+            Server server = Server.getInstance(getApplication().getApplicationContext());
+            server.fillOrders(configEmail.value);
             return true;
         }
         else {

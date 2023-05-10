@@ -21,7 +21,7 @@ public interface GoodDao {
     @Query("DELETE FROM good")
     void deleteAll();
 
-    @Query("SELECT * FROM good WHERE id =:id")
+    @Query("SELECT * FROM good WHERE idg =:id")
     Good getByID(int id);
 
 

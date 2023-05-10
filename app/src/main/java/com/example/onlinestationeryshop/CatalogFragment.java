@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -75,6 +76,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     Server server;
 
 
+    private View CatView;
     BottomNavigationView bottomNavigationView;
     GoodRycycleAdapter goodAdapter;
     ArrayList<Good>  listitem;
@@ -108,7 +110,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     @SuppressLint("ResourceType")
     public void onClick(int i) {
-        System.out.println("Нажата область товара  " + i);
+        Log.d("qqq","Нажата область товара  " + i);
         try {
             Bundle bundle = new Bundle();
             bundle.putInt("IdArg", i);
@@ -147,16 +149,22 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     public void search(View view){
         String text = editText.getText().toString();
         text = text.toLowerCase();
+        text = text.trim();
         server.setSearch(text);
-        mViewModel.putInSearch(text);
+        if (!text.equals("")) {
+            mViewModel.putInSearch(text);
+        }
         editText.setText("");
         hideKeyboardFrom(view.getContext(),view);
         FocusOff(editText);
         System.out.println(text + "aaa");
-        if(text.length()>0) {
-            fillData(server.search());
-            updateAdapter(listitem);
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                server.searchgoods();
+            }
+        };
+        runnable.run();
     }
 
     public static void FocusOff(EditText e){
@@ -188,15 +196,35 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         }
     }
 
+    protected BroadcastReceiver receiverq = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("qqq", "onReceive()");
+            try {
+                Log.d("qqq", "Broadcaststart");
+                Server server = Server.getInstance(getActivity().getApplicationContext());
+                String h = intent.getStringExtra(server.INFOGOOD);
+                Log.d("qqq", h);
+                if (h.equals("Ready")) {
+                    fillData(server.search());
+                    updateAdapter(listitem);
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    };
     protected BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
+                Log.d("qqq", "Broadcast");
                 server = Server.getInstance(getActivity().getApplicationContext());
                 System.out.println(server+"sss");
                 System.out.println(intent.getStringExtra(goodAdapter.INFO) +  "  " +   intent.getStringExtra(goodAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
+                Log.d("qqq", "Добавление в корзину" + h);
                 boolean ok = false;
                 updateCart();
                 System.out.println("Размер cart " + cart.size());
@@ -265,9 +293,9 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         server = Server.getInstance(getActivity().getApplicationContext());
         fillData(server.search());
         updateAdapter(listitem);
-        System.out.println(goodAdapter+"ttt");
-        System.out.println(goodAdapter.CHANNEL+"ttt");
+        Log.d("qqq", "rrrrr"+server.orders.size());
         getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
+        getActivity().registerReceiver(receiverq, new IntentFilter(server.CHANNEL));
     }
 
     @Override
@@ -276,6 +304,9 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         count_cart = getActivity().findViewById(R.id.count_cart);
         nulladapter = mbinding.nullAdapter;
         editText = mbinding.search;
+        server = Server.getInstance(getActivity().getApplicationContext());
+        server.searchgoods();
+        Log.d("qqq", editText.toString());
         back = mbinding.back;
         cancel = mbinding.cancel;
         updateCart();
@@ -315,8 +346,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
             @Override
             public void onClick(View view) {
                 server.setSearch("");
-                fillData(server.search());
-                updateAdapter(listitem);
+                search(view);
                 editText.setText("");
                 hideKeyboardFrom(view.getContext(), view);
                 FocusOff(editText);

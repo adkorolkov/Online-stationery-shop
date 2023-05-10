@@ -3,6 +3,10 @@ package com.example.onlinestationeryshop;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +42,26 @@ public class EnterFragment extends Fragment {
         return binding.getRoot();
     }
 
+    protected BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("qqq", "onReceive()");
+            try {
+                Log.d("qqq", "Broadcaststart");
+                Server server = Server.getInstance(getActivity().getApplicationContext());
+                String h = intent.getStringExtra(server.INFOGOOD);
+                Log.d("qqq", h);
+                boolean a = mViewModel.IsEntered();
+                if (h.equals("Ready") && a) {
+                    Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                    NavController c = NavHostFragment.findNavController(navhost);
+                    c.navigate(R.id.action_to_CatalogFragment);
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    };
 
     @Override
     public void onStart() {
@@ -60,6 +85,8 @@ public class EnterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
         bottomNavigationView.setVisibility(View.GONE);
+        Server server = Server.getInstance(getActivity().getApplicationContext());
+        getActivity().registerReceiver(receiver, new IntentFilter(server.CHANNEL));
         try {
             EditText email = binding.email;
             EditText password = binding.password;

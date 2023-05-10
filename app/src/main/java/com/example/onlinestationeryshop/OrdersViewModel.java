@@ -1,6 +1,7 @@
 package com.example.onlinestationeryshop;
 
 import android.app.Application;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -34,13 +35,19 @@ public class OrdersViewModel extends AndroidViewModel {
         List<FilledOrder> returned = new ArrayList<>();
         for (int i=0;i<orders.size();i++){
             int id = orders.get(i).id;
+            Log.d("qqq", "OrderId in OrderViewModel  "+id);
             List<OrderContent> contents = orderContentDao.getByOrderID(id);
-            ArrayList<Pair<Good, Integer>> list = new ArrayList<>();
+            Log.d("qqq", "contentssize  "+contents.size());
+            for (int k = 0;k<contents.size();k++){
+                Log.d("qqq", " OrderViewModel "+contents.get(i).getGoodname());
+            }
+            ArrayList<Pair<String, Pair<Integer, Integer>>> list = new ArrayList<>();
             int sum = 0;
             for(int j=0;j<contents.size();j++){
-                Good q = goodDao.getByID(contents.get(j).goodid);
-                list.add(new Pair<>(q, contents.get(j).count));
+                OrderContent orderContenti = contents.get(i);
+                list.add(new Pair<>(orderContenti.goodname, new Pair<>(orderContenti.price, orderContenti.count)));
             }
+            Server server = Server.getInstance(getApplication().getApplicationContext());
             FilledOrder filledOrder = new FilledOrder(list, orders.get(i).status, orders.get(i).time, orders.get(i).id);
             returned.add(filledOrder);
         }

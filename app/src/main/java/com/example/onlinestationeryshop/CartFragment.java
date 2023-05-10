@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,6 +89,7 @@ public class CartFragment extends Fragment {
 
     @SuppressLint("ResourceType")
     void fillData(ArrayList<Good> e) {
+        Log.d("qqq", e.toString());
         listitem = new ArrayList<>();
         for(int i=0;i< e.size();i++) {
             listitem.add(e.get(i));
@@ -160,6 +162,13 @@ public class CartFragment extends Fragment {
         countQ = binding.countTotal;
         updateCart();
         recyclerView = binding.cartList;
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                server.getCartItems();
+            }
+        };
+        runnable.run();
         fillData(server.getCartItems());
         updateAdapter(listitem);
         Button pay = binding.pay;

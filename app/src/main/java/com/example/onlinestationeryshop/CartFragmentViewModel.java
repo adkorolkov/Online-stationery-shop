@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -13,6 +14,7 @@ import androidx.room.Room;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
@@ -39,12 +41,17 @@ public class CartFragmentViewModel  extends AndroidViewModel {
         OrderDao orderDao = db.orderDao();
         OrderContentDao orderContentDao = db.orderContentDao();
         long orderId = orderDao.insert(order);
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.setCurrentIdForOrders(orderId);
         CartDao cartDao = db.cartDao();
         List<Cart> cart = cartDao.getAll();
+        ArrayList<OrderContent> resultOrder = new ArrayList<>();
         for (int i=0;i<cart.size();i++){
-            OrderContent u = new OrderContent(orderId, cart.get(i).goodid, cart.get(i).count);
+            OrderContent u = new OrderContent(orderId, cart.get(i).goodid, cart.get(i).count, cart.get(i).goodname, cart.get(i).price);
+            resultOrder.add(u);
             orderContentDao.insert(u);
         }
+        server.setOrderToFirebase(order, resultOrder);
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             @Override

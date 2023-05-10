@@ -24,5 +24,7 @@ public class RegistrationViewModel extends AndroidViewModel {
         configDao.insert(new Config("email", email));
         configDao.insert(new Config("password", password));
         configDao.insert(new Config("enter", "true"));
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.fillOrders(email);
     }
 }

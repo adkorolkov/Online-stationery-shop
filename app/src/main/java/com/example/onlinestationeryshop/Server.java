@@ -1,18 +1,29 @@
 package com.example.onlinestationeryshop;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import androidx.room.Room;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,6 +33,21 @@ import java.util.List;
 public class Server {
 
 
+    public long getCurrentIdForOrders() {
+        return currentIdForOrders;
+    }
+
+    public void setCurrentIdForOrders(long currentIdForOrders) {
+        this.currentIdForOrders = currentIdForOrders;
+    }
+
+    public ArrayList<FilledOrder> orders;
+    private long currentIdForOrders;
+    public String INFOGOOD = "INFOGOOD";
+    public String CHANNEL = "Canal";
+    private ArrayList<Good> searchresult;
+    private ArrayList<Good> all;
+    private ArrayList<Good> cart;
     private Context context;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -33,7 +59,6 @@ public class Server {
 
 
     private ArrayList<Good> createGoods(){
-
         ArrayList<Good> e = new ArrayList<>();
         ArrayList<Integer> images_tr = new ArrayList<>();
         images_tr.add(R.drawable.tractor);
@@ -69,11 +94,9 @@ public class Server {
 
 
     private void fillGoods(GoodDao goodDao){
-        Log.d("qqq", "Initializate firebase");
         ArrayList<Good> g = createGoods();
         FirebaseApp.initializeApp(context);
         firebaseDatabase = FirebaseDatabase.getInstance();
-        Log.d("qqq","firebase"+firebaseDatabase);
         databaseReference= firebaseDatabase.getReference(GoodKey);
         Log.d("qqq","Reference"+databaseReference);
         for (int i=0;i<g.size();i++){
@@ -85,13 +108,14 @@ public class Server {
 
 
     private Server(Context contex){
+        searchresult = new ArrayList<>();
+        orders = new ArrayList<>();
+        cart = new ArrayList<>();
         context = contex;
         db = Room.databaseBuilder(contex, DataBase.class, "stationery").allowMainThreadQueries().build();
         GoodDao goodDao = db.goodDao();
-        if (goodDao.getCount()==0){
-            fillGoods(goodDao);
-        }
     }
+
 
 
     public static synchronized Server getInstance(Context context) {
@@ -102,32 +126,28 @@ public class Server {
     }
 
 
-    public void addToCart(int id, int number){
+    public void addToCart(int id, int number, String name, int price){
         CartDao cartDao = db.cartDao();
-
-        System.out.println("CART GETBYID  " + cartDao.getByGoodId(id) + "id  " + id);
+        Log.d("qqq", "AddToCart  " + id + "  " + number + "  " + name);
         if (cartDao.getByGoodId(id)!=null && cartDao.getByGoodId(id).count>0){
             changeCartItem(id, number);
         }
         else {
-            System.out.println("Insert   cartId "  + id);
-            cartDao.insert(new Cart(id, number));
+            cartDao.insert(new Cart(id, number, name, price));
         }
     }
 
 
 
 
+
     public void changeCartItem(int id, int number){
+        Log.d("qqq", "changeCartItem");
+        Log.d("qqq", Integer.toString(id) + "  " + Integer.toString(number));
         CartDao cartDao = db.cartDao();
         Cart cart1 = cartDao.getByGoodId(id);
-        if (cart1==null){
-            addToCart(id, number);
-        }
-        else {
-            cart1.count += number;
-            cartDao.update(cart1);
-        }
+        cart1.count += number;
+        cartDao.update(cart1);
     }
 
     public void deleteCartItem(int id){
@@ -170,10 +190,13 @@ public class Server {
     }
 
     public ArrayList<Good> getCartItems(){
+        ArrayList<Good> ret = new ArrayList<>();
         ArrayList<Good> q = new ArrayList<>();
         CartDao cartDao = db.cartDao();
         List<Cart> w = cartDao.getAll();
+        Log.d("qqq", "len w in server.getCart" + w.size());
         for(int i=0;i<w.size();i++){
+            Log.d("qqq", getForInd(w.get(i).goodid).toString());
             q.add(getForInd(w.get(i).goodid));
         }
         return q;
@@ -190,23 +213,150 @@ public class Server {
     }
 
     public ArrayList<Good> search(){
-        GoodDao goodDao = db.goodDao();
-        ArrayList<Good> ret = new ArrayList<>();
-        if (search_n.equals("")){
-            List<Good> q =  goodDao.getAll();
-            for (int i=0;i<q.size();i++){
-                ret.add(q.get(i));
-            }
-        }
-        else{
-            List<Good> q = goodDao.getByName(search_n);
-            for (int i=0;i<q.size();i++){
-                ret.add(q.get(i));
-            }
-        }
-        return ret;
+        Log.d("qqq", " insearch  " + searchresult.size());
+        return searchresult;
     }
 
+
+    public void fillOrders(String email){
+        FirebaseDatabase firebaseDatabase;
+        DatabaseReference databaseReference;
+        FirebaseApp.initializeApp(context);
+        final int[] Completed = {0};
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users").child(email);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot Snapshot : snapshot.getChildren()) {
+                            try {
+                                FilledOrder order = Snapshot.getValue(FilledOrder.class);
+                                orders.add(order);
+                            } catch (Exception e) {
+                                Log.d("qqq", e.toString());
+                            }
+                        }
+                        Handler h = new Handler(Looper.getMainLooper()){
+                            @Override
+                            public void handleMessage(@NonNull Message msg) {
+                                Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                                i.putExtra(INFOGOOD, msg.obj.toString()); // добавляем в интент данные
+                                context.sendBroadcast(i); // рассылаем
+                            }
+                        };
+                        Message msg = new Message();
+                        msg.obj = "Ready";
+                        h.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d("qqq", "Помогите");
+                    }
+                });
+            }
+        };
+        runnable.run();
+    }
+
+
+
+
+    public void searchgoods(){
+        ArrayList<Good> ret = new ArrayList<>();
+        FirebaseDatabase firebaseDatabase;
+        DatabaseReference databaseReference;
+        FirebaseApp.initializeApp(context);
+        final int[] Completed = {0};
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("Good");
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot Snapshot : snapshot.getChildren()) {
+                            try {
+                                Good good = Snapshot.getValue(Good.class);
+                                Log.d("qqq", good.getName() + "" + search_n + ";;" + good.getName().contains(search_n));
+                                String q = good.getName().toLowerCase();
+                                if (q.contains(search_n)) {
+                                    ret.add(good);
+                                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                                    LocalDateTime now = LocalDateTime.now();
+                                    Log.d("qqq", Integer.toString(ret.size()) + dtf.format(now));
+                                }
+                            } catch (Exception e) {
+                                Log.d("qqq", e.toString());
+                            }
+                        }
+                        Log.d("qqq", "ret size  " + Integer.toString(ret.size()));
+                        searchresult = ret;
+                        if (search_n.equals("")){
+                            all = ret;
+                        }
+                        Handler h = new Handler(Looper.getMainLooper()){
+                            @Override
+                            public void handleMessage(@NonNull Message msg) {
+                                Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                                i.putExtra(INFOGOOD, msg.obj.toString()); // добавляем в интент данные
+                                context.sendBroadcast(i); // рассылаем
+                            }
+                        };
+                        Message msg = new Message();
+                        msg.obj = "Ready";
+                        h.sendMessage(msg);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d("qqq", "Помогите");
+                    }
+                });
+            }
+        };
+        runnable.run();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        Log.d("qqq", Integer.toString(ret.size())+ dtf.format(now));
+    }
+
+
+    public void setOrderToFirebase(Order order, ArrayList<OrderContent> orderContents){
+        FirebaseApp.initializeApp(context);
+        Log.d("qqq", "orderContents len  "+orderContents.size());
+        for (int i=0;i<orderContents.size();i++){
+            Log.d("qqq", orderContents.get(i).goodname);
+        }
+        Log.d("qqq", "orderContents   "+orderContents.toString());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference= firebaseDatabase.getReference("Users");
+        Log.d("qqq","Reference"+databaseReference);
+        ConfigDao configDao = db.configDao();
+        Config d = configDao.getByName("email");
+        String q = d.value;
+
+        String e = "";
+        for (int i=0;i<q.length();i++){
+            if (q.charAt(i) == '.') {
+                e+='_';
+            }
+            else{
+                e+=q.charAt(i);
+            }
+        }
+        for (int i=0;i<orderContents.size();i++){
+            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("name").setValue(orderContents.get(i).goodname);
+            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("count").setValue(orderContents.get(i).count);
+            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("price").setValue(orderContents.get(i).price);
+        }
+        databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("status").setValue(order.status);
+        databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("time").setValue(order.time);
+    }
 
     public String getTime() {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -243,7 +393,13 @@ public class Server {
     }
 
     public Good getForInd(int i){
-
-        return db.goodDao().getByID(i);
+        Good res = null;
+        for (int j=0;j<all.size();j++){
+            Good f = all.get(j);
+            if (f.getIdg()==i){
+                res = f;
+            }
+        }
+        return res;
     }
 }

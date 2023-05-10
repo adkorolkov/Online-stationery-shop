@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +43,9 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
     public CartRecuclerViewAdapter(Context context, ArrayList<Good> goods) {
         ctx = context;
         objects = goods;
+        Log.d("qqq",objects.size() + "qqq");
         for (int i=0;i<objects.size();i++){
-            System.out.println(objects.get(i).getId() + "qqq");
+            Log.d("qqq",objects.get(i).getIdg() + "qqq");
         }
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -63,6 +65,14 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
         return new RecyclerViewItemViewHolder(mBinding.getRoot());
     }
 
+    private void setClicable(boolean enable, RecyclerViewItemViewHolder holder){
+        holder.binding.minusC.setClickable(enable);
+        holder.binding.plusC.setClickable(enable);
+        holder.binding.cansel.setClickable(enable);
+    }
+
+
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewItemViewHolder holder, int po) {
         h = new Handler(Looper.getMainLooper()){
@@ -76,7 +86,8 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
         // используем созданные, но не используемые view
 
         Good p = getGood(holder.getAdapterPosition());
-        System.out.println(p.getId() + "getPidor");
+        Log.d("qqq", p.getIdg()+" getIdg");
+        Log.d("qqq", server.getItemCount(p.getIdg()) + " getItemCount");
         // заполняем View в пункте списка данными из товаров: наименование, цена
         // и картинка
         String name = p.getName();
@@ -94,14 +105,15 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
             }
         }
         System.out.println(name.length() + "lenmame");
-        String a = Integer.toString(p.getPrice() * server.getItemCount(p.getId()));
+        String a = Integer.toString(p.getPrice() * server.getItemCount(p.getIdg()));
         ((TextView) holder.binding.priceTotal).setText(a + " ₽");
         ((TextView) holder.binding.name).setText(name);
-        ((TextView) holder.binding.countI).setText(Integer.toString(server.getItemCount(p.getId())));
+        ((TextView) holder.binding.countI).setText(Integer.toString(server.getItemCount(p.getIdg())));
         ((ImageView) holder.binding.icon).setImageResource(p.getImage_prev());
         ((ImageButton) holder.binding.minusC).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setClicable(false, holder);
                 if (holder.binding.countI.getText().toString().equals("2")) {
                     holder.binding.minusC.setClickable(false);
                     holder.binding.minusC.setVisibility(View.GONE);
@@ -110,35 +122,41 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
                     h.sendMessage(msg);
                     Integer i = Integer.parseInt(holder.binding.countI.getText().toString()) - 1;
                     holder.binding.countI.setText(i.toString());
-                    server.changeCartItem(p.getId(), -1);
-                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
+                    server.changeCartItem(p.getIdg(), -1);
+                    Integer priceTotal = p.getPrice() * Integer.parseInt(holder.binding.countI.getText().toString());
+                    holder.binding.priceTotal.setText(priceTotal.toString() + " ₽");
                 } else {
                     Message msg = new Message();
                     msg.obj = Integer.toString(-1);
                     h.sendMessage(msg);
                     Integer i = Integer.parseInt(holder.binding.countI.getText().toString()) - 1;
                     holder.binding.countI.setText(i.toString());
-                    server.changeCartItem(p.getId(), -1);
-                    holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
+                    server.changeCartItem(p.getIdg(), -1);
+                    Integer priceTotal = p.getPrice() * Integer.parseInt(holder.binding.countI.getText().toString());
+                    holder.binding.priceTotal.setText(priceTotal.toString() + " ₽");
                 }
+                setClicable(true, holder);
             }
         });
-        if (server.getItemCount(p.getId())==1) {
+        if (server.getItemCount(p.getIdg())==1) {
             holder.binding.minusC.setVisibility(View.GONE);
             holder.binding.minusC.setClickable(false);
         }
         ((ImageButton) holder.binding.cansel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setClicable(false, holder);
                 Message msg = new Message();
-                msg.obj = Integer.toString(p.getId());
-                System.out.println("Delete in adapter " + p.getId());
+                msg.obj = Integer.toString(p.getIdg());
+                System.out.println("Delete in adapter " + p.getIdg());
                 h.sendMessage(msg);
+                setClicable(true, holder);
             }
         });
         ((ImageButton) holder.binding.plusC).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setClicable(false, holder);
                 Message msg = new Message();
                 msg.obj = Integer.toString(-1);
                 h.sendMessage(msg);
@@ -149,9 +167,10 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
                     holder.binding.minusC.setVisibility(View.VISIBLE);
                 }
                 holder.binding.countI.setText(i.toString());
-                server.changeCartItem(p.getId(), 1);
-                holder.binding.priceTotal.setText(Integer.toString(p.getPrice() * server.getItemCount(p.getId())) + " ₽");
-
+                server.changeCartItem(p.getIdg(), 1);
+                Integer priceTotal = p.getPrice() * Integer.parseInt(holder.binding.countI.getText().toString());
+                holder.binding.priceTotal.setText(priceTotal.toString() + " ₽");
+                setClicable(true, holder);
             }
         });
     }

@@ -4,9 +4,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
 @Entity(tableName = "cart", indices = {@Index(value = {"goodid"},
         unique = true)})
-public class Cart {
+public class NewCart {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     int id;
@@ -14,20 +15,17 @@ public class Cart {
     int goodid;
     @ColumnInfo(name = "count")
     int count;
-    @ColumnInfo(name = "goodname")
-    String goodname;
-    @ColumnInfo(name = "price")
-    int price;
+
+    Good good;
 
 
-    public Cart(int goodid, int count, String goodname, int price){
+    public NewCart(int goodid, int count, Good good){
         this.goodid = goodid;
-        this.price = price;
         this.count = count;
-        this.goodname = goodname;
+        this.good = good;
     }
 
-    public Cart(){
+    public NewCart(){
 
     }
 

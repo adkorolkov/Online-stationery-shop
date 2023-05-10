@@ -94,9 +94,10 @@ public class Good {
         return id;
     }
 
-    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     private int id;
+    @PrimaryKey()
+    @ColumnInfo(name = "idg")
 
     private int idg;
 

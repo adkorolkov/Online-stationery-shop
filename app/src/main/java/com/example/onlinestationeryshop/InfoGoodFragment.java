@@ -164,7 +164,7 @@ public class InfoGoodFragment extends Fragment {
         addToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                server.addToCart(r, 1);
+                server.addToCart(r, 1, name, price);
                 updateCart();
                 addToCart.setVisibility(View.GONE);
                 linearLayout.setVisibility(View.VISIBLE);

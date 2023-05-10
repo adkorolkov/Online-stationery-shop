@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,10 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         notifyDataSetChanged();
     }
 
+    private void setClicable(boolean enable, GoodRycycleAdapter.RecyclerViewItemViewHolder holder){
+        holder.binding.addToCart.setClickable(enable);
+    }
+
     @NonNull
     @Override
     public RecyclerViewItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -75,7 +80,7 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onClick(p.getId());
+                listener.onClick(p.getIdg());
             }
         });
 
@@ -96,17 +101,21 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         ((Button) holder.binding.addToCart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setClicable(false, holder);
                 Server server = Server.getInstance(ctx.getApplicationContext());
-                if(server.isItemInCart(p.getId())){
-                    server.changeCartItem(p.getId(), 1);
+                if(server.isItemInCart(p.getIdg())){
+                    Log.d("qqq", "RycycleAdapter" + Integer.toString(p.getIdg()));
+                    server.changeCartItem(p.getIdg(), 1);
                 }
                 else {
-                    server.addToCart(p.getId(), 1);
+                    Log.d("qqq", "Adapter + " + Integer.toString(p.getIdg()));
+                    server.addToCart(p.getIdg(), 1, p.getName(), p.getPrice());
                 }
-                System.out.println("Нажата клавиша добавления в корзину " + (holder.getAdapterPosition()+1));
                 Message msg = new Message();
-                msg.obj = Integer.toString(p.getId());
+                msg.obj = Integer.toString(p.getIdg());
+                Log.d("qqq","Нажата клавиша добавления в корзину " + (holder.getAdapterPosition()+1));
                 h.sendMessage(msg);
+                setClicable(true, holder);
             }
         });
     }
