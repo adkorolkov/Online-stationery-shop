@@ -45,13 +45,10 @@ public class EnterFragment extends Fragment {
     protected BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("qqq", "onReceive()");
             try {
-                Log.d("qqq", "Broadcaststart");
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
                 String w = intent.getStringExtra(server.INFOORDER);
-                Log.d("qqq", w + "  w in Broadcast");
                 boolean a = mViewModel.IsEntered();
                 if (h.equals("ReadyGo") && w!=null && w.equals("ReadyOr") && a) {
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);

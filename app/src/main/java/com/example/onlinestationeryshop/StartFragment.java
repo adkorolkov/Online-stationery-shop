@@ -30,12 +30,9 @@ public class StartFragment extends Fragment {
     protected BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("qqq", "onReceive()");
             try {
-                Log.d("qqq", "Broadcaststart");
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
-                Log.d("qqq", h);
                 if (h.equals("ReadyGo")) {
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
                     NavController c = NavHostFragment.findNavController(navhost);

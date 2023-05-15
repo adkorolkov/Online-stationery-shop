@@ -89,7 +89,6 @@ public class CartFragment extends Fragment {
 
     @SuppressLint("ResourceType")
     void fillData(ArrayList<Good> e) {
-        Log.d("qqq", e.toString());
         listitem = new ArrayList<>();
         for(int i=0;i< e.size();i++) {
             listitem.add(e.get(i));

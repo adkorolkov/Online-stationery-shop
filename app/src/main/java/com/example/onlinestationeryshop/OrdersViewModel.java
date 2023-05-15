@@ -12,7 +12,9 @@ import androidx.room.Room;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrdersViewModel extends AndroidViewModel {
     public OrdersViewModel(@NonNull Application application) {
@@ -25,34 +27,19 @@ public class OrdersViewModel extends AndroidViewModel {
         server.changeStatusOrder(status, id);
     }
 
+
+    public String getEmail(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.getEmail();
+    }
     public List<FilledOrder> getFilledOrders(){
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        OrderDao orderDao = db.orderDao();
-        GoodDao goodDao = db.goodDao();
-        OrderContentDao orderContentDao = db.orderContentDao();
-        List<Order> orders = orderDao.getAll();
-        System.out.println("len orders  " + orders.size());
-        List<FilledOrder> returned = new ArrayList<>();
-        for (int i=0;i<orders.size();i++){
-            int id = orders.get(i).id;
-            Log.d("qqq", "OrderId in OrderViewModel  "+id);
-            List<OrderContent> contents = orderContentDao.getByOrderID(id);
-            Log.d("qqq", "contentssize  "+contents.size());
-            for (int k = 0;k<contents.size();k++){
-                Log.d("qqq", " OrderViewModel "+contents.get(i).getGoodname());
-            }
-            ArrayList<Pair<String, Pair<Integer, Integer>>> list = new ArrayList<>();
-            int sum = 0;
-            for(int j=0;j<contents.size();j++){
-                OrderContent orderContenti = contents.get(i);
-                list.add(new Pair<>(orderContenti.goodname, new Pair<>(orderContenti.price, orderContenti.count)));
-            }
-            Server server = Server.getInstance(getApplication().getApplicationContext());
-            FilledOrder filledOrder = new FilledOrder(list, orders.get(i).id,orders.get(i).status, orders.get(i).time);
-            returned.add(filledOrder);
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        List<FilledOrder> orders = new ArrayList<>();
+        HashMap<Integer, FilledOrder> orderlist = server.orders;
+        for (Map.Entry<Integer, FilledOrder> entry : orderlist.entrySet()){
+            orders.add(entry.getValue());
         }
-        System.out.println("len returned  " + returned.size());
-        return returned;
+        return orders;
     }
 
 

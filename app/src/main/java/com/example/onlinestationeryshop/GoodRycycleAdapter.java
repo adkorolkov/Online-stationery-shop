@@ -104,16 +104,13 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
                 setClicable(false, holder);
                 Server server = Server.getInstance(ctx.getApplicationContext());
                 if(server.isItemInCart(p.getIdg())){
-                    Log.d("qqq", "RycycleAdapter" + Integer.toString(p.getIdg()));
                     server.changeCartItem(p.getIdg(), 1);
                 }
                 else {
-                    Log.d("qqq", "Adapter + " + Integer.toString(p.getIdg()));
                     server.addToCart(p.getIdg(), 1, p.getName(), p.getPrice());
                 }
                 Message msg = new Message();
                 msg.obj = Integer.toString(p.getIdg());
-                Log.d("qqq","Нажата клавиша добавления в корзину " + (holder.getAdapterPosition()+1));
                 h.sendMessage(msg);
                 setClicable(true, holder);
             }

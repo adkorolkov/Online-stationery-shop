@@ -110,7 +110,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
 
     @SuppressLint("ResourceType")
     public void onClick(int i) {
-        Log.d("qqq","Нажата область товара  " + i);
         try {
             Bundle bundle = new Bundle();
             bundle.putInt("IdArg", i);
@@ -199,12 +198,9 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     protected BroadcastReceiver receiverq = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("qqq", "onReceive()");
             try {
-                Log.d("qqq", "Broadcaststart");
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
-                Log.d("qqq", h);
                 if (h.equals("Ready")) {
                     fillData(server.search());
                     updateAdapter(listitem);
@@ -218,13 +214,11 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                Log.d("qqq", "Broadcast");
                 server = Server.getInstance(getActivity().getApplicationContext());
                 System.out.println(server+"sss");
                 System.out.println(intent.getStringExtra(goodAdapter.INFO) +  "  " +   intent.getStringExtra(goodAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
-                Log.d("qqq", "Добавление в корзину" + h);
                 boolean ok = false;
                 updateCart();
                 System.out.println("Размер cart " + cart.size());
@@ -305,7 +299,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         editText = mbinding.search;
         server = Server.getInstance(getActivity().getApplicationContext());
         server.searchgoods();
-        Log.d("qqq", editText.toString());
         back = mbinding.back;
         cancel = mbinding.cancel;
         updateCart();
@@ -362,7 +355,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("qqq", "rrrrr"+server.orders.size());
                 search(view);
             }
         });

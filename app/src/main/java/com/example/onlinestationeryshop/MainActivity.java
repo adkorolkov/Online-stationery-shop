@@ -102,10 +102,8 @@ public class MainActivity  extends AppCompatActivity {
                                         public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                                             try {
                                                 Good good = snapshot.getValue(Good.class);
-                                                Log.d("qqq", good.getName());
                                             }
                                             catch (Exception e){
-                                                Log.d("qqq", e.toString());
                                             }
                                         }
 
@@ -124,7 +122,6 @@ public class MainActivity  extends AppCompatActivity {
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
-                                            Log.d("qqq", "Помогите");
                                         }
                                     };
                                     databaseReference.addChildEventListener(postListener);

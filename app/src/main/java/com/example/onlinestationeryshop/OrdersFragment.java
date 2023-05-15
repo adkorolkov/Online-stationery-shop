@@ -15,18 +15,25 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.onlinestationeryshop.databinding.FragmentOrdersBinding;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrdersFragment extends Fragment {
 
     private OrdersViewModel mViewModel;
+
+    private Server server;
     private FragmentOrdersBinding binding;
     OrderRecuclerViewAdapter orderRecuclerViewAdapter;
     CartFragmentViewModel cartFragmentViewModel;
@@ -53,7 +60,7 @@ public class OrdersFragment extends Fragment {
             try {
                 System.out.println(intent.getStringExtra(orderRecuclerViewAdapter.INFO) +  "  " +   intent.getStringExtra(orderRecuclerViewAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(orderRecuclerViewAdapter.INFO);
-                String t = intent.getStringExtra(cartFragmentViewModel.INFO);
+                Log.d("qqq", h);
                 if (h.equals("true")){
                     update();
                 }
@@ -63,7 +70,7 @@ public class OrdersFragment extends Fragment {
                         mViewModel.changeStatusOrder("Отменён", id);
                         update();
                     }
-                    else if (h.endsWith("Ready")){
+                    else if (h.endsWith("ReadyGet")){
                         int id = Integer.parseInt(h.split(" ")[0]);
                         mViewModel.changeStatusOrder("Получен", id);
                         update();
@@ -93,6 +100,22 @@ public class OrdersFragment extends Fragment {
         }
     };
 
+    protected BroadcastReceiver receiverStatus = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                server = Server.getInstance(getActivity().getApplicationContext());
+                String h = intent.getStringExtra(server.INFOORDER);
+                if (h.equals("ChangeStatus")){
+                    update();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
 
     private void updateAdapter(List<FilledOrder>  listitem){
         System.out.println("len listitem in updateAdapter  " + listitem.size());
@@ -113,12 +136,27 @@ public class OrdersFragment extends Fragment {
         updateAdapter(listitem);
     }
 
+
+    private void loop(){
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                server = Server.getInstance(getActivity().getApplicationContext());
+                server.fillOrders(mViewModel.getEmail());
+                update();
+            }
+        }, 5000);
+    }
     @Override
     public void onStart() {
         super.onStart();
+        server = Server.getInstance(getActivity().getApplicationContext());
         update();
+        loop();
         getActivity().registerReceiver(receiver, new IntentFilter(orderRecuclerViewAdapter.CHANNEL));
         getActivity().registerReceiver(receiverTimer, new IntentFilter(cartFragmentViewModel.CHANNEL));
+        getActivity().registerReceiver(receiverStatus, new IntentFilter(server.CHANNEL));
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

@@ -39,9 +39,6 @@ public class OrderRecuclerViewAdapter extends RecyclerView.Adapter<OrderRecucler
     public OrderRecuclerViewAdapter(Context context, List<FilledOrder> goods) {
         ctx = context;
         objects = goods;
-        for (int i=0;i< objects.size();i++){
-            System.out.println(objects.get(i).getItems());
-        }
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -76,7 +73,7 @@ public class OrderRecuclerViewAdapter extends RecyclerView.Adapter<OrderRecucler
         // заполняем View в пункте списка данными из товаров: наименование, цена
         // и картинка
 
-        ((TextView) holder.binding.orderid).setText("Заказ №" + Integer.toString(p.id));
+        ((TextView) holder.binding.orderid).setText("Заказ №" + Integer.toString(p.orderId));
         ((TextView) holder.binding.price).setText(p.getPrice().toString() + " ₽");
         ((TextView) holder.binding.status).setText(p.status);
         String q = p.time;
@@ -111,7 +108,7 @@ public class OrderRecuclerViewAdapter extends RecyclerView.Adapter<OrderRecucler
             @Override
             public void onClick(View v) {
                 Message msg = new Message();
-                msg.obj = Integer.toString(p.id)+" Cansel";
+                msg.obj = Integer.toString(p.orderId)+" Cansel";
                 h.sendMessage(msg);
             }
         });
@@ -119,11 +116,16 @@ public class OrderRecuclerViewAdapter extends RecyclerView.Adapter<OrderRecucler
             @Override
             public void onClick(View v) {
                 Message msg = new Message();
-                msg.obj = Integer.toString(p.id)+" Ready";
+                msg.obj = Integer.toString(p.orderId)+" ReadyGet";
                 h.sendMessage(msg);
             }
         });
-        ((TextView) holder.binding.goodlist).setText(p.getItems());
+        ArrayList<OrderGoodListItem> list = p.getGoods();
+        String goodlist = "";
+        for (int i=0;i<list.size();i++){
+            goodlist+=list.get(i).getName() + " в количестве " + list.get(i).getCount() + "\n";
+        }
+        ((TextView) holder.binding.goodlist).setText(goodlist);
     }
 
     @Override

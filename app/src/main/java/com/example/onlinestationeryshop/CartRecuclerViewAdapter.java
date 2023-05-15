@@ -43,9 +43,7 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
     public CartRecuclerViewAdapter(Context context, ArrayList<Good> goods) {
         ctx = context;
         objects = goods;
-        Log.d("qqq",objects.size() + "qqq");
         for (int i=0;i<objects.size();i++){
-            Log.d("qqq",objects.get(i).getIdg() + "qqq");
         }
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -86,8 +84,6 @@ public class CartRecuclerViewAdapter extends RecyclerView.Adapter<CartRecuclerVi
         // используем созданные, но не используемые view
 
         Good p = getGood(holder.getAdapterPosition());
-        Log.d("qqq", p.getIdg()+" getIdg");
-        Log.d("qqq", server.getItemCount(p.getIdg()) + " getItemCount");
         // заполняем View в пункте списка данными из товаров: наименование, цена
         // и картинка
         String name = p.getName();
