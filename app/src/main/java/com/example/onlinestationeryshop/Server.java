@@ -23,12 +23,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Server {
 
@@ -41,9 +45,10 @@ public class Server {
         this.currentIdForOrders = currentIdForOrders;
     }
 
-    public ArrayList<FilledOrder> orders;
+    public HashMap<Integer,FilledOrder> orders;
     private long currentIdForOrders;
     public String INFOGOOD = "INFOGOOD";
+    public String INFOORDER = "INFOORDER";
     public String CHANNEL = "Canal";
     private ArrayList<Good> searchresult;
     private ArrayList<Good> all;
@@ -109,7 +114,7 @@ public class Server {
 
     private Server(Context contex){
         searchresult = new ArrayList<>();
-        orders = new ArrayList<>();
+        orders = new HashMap<>();
         cart = new ArrayList<>();
         context = contex;
         db = Room.databaseBuilder(contex, DataBase.class, "stationery").allowMainThreadQueries().build();
@@ -219,12 +224,31 @@ public class Server {
 
 
     public void fillOrders(String email){
+        Log.d("qqq", "fillOrders  "+email);
+        String e = "";
+        for (int i=0;i<email.length();i++){
+            if (email.charAt(i) == '.') {
+                e+='_';
+            }
+            else{
+                e+=email.charAt(i);
+            }
+        }
+        Log.d("qqq", "fillOrders  "+e);
         FirebaseDatabase firebaseDatabase;
         DatabaseReference databaseReference;
         FirebaseApp.initializeApp(context);
         final int[] Completed = {0};
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("Users").child(email);
+        databaseReference = firebaseDatabase.getReference("Users").child(e);
+        Handler h = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                i.putExtra(INFOORDER, msg.obj.toString()); // добавляем в интент данные
+                context.sendBroadcast(i); // рассылаем
+            }
+        };
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -233,23 +257,15 @@ public class Server {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot Snapshot : snapshot.getChildren()) {
                             try {
-                                FilledOrder order = Snapshot.getValue(FilledOrder.class);
-                                orders.add(order);
+                                String a = Snapshot.getValue().toString(); // parsing from json
+                                Log.d("qqq", "snapshot " + a);
+                                //FilledOrder fillorder = Snapshot.getValue(FilledOrder.class);
+                                //Log.d("qqq", fillorder.orderId + " fillorderId  " + fillorder.status);
+                                //orders.put(fillorder.orderId, fillorder);
                             } catch (Exception e) {
                                 Log.d("qqq", e.toString());
                             }
                         }
-                        Handler h = new Handler(Looper.getMainLooper()){
-                            @Override
-                            public void handleMessage(@NonNull Message msg) {
-                                Intent i = new Intent(CHANNEL); // интент для отправки ответа
-                                i.putExtra(INFOGOOD, msg.obj.toString()); // добавляем в интент данные
-                                context.sendBroadcast(i); // рассылаем
-                            }
-                        };
-                        Message msg = new Message();
-                        msg.obj = "Ready";
-                        h.sendMessage(msg);
                     }
 
                     @Override
@@ -257,6 +273,16 @@ public class Server {
                         Log.d("qqq", "Помогите");
                     }
                 });
+                Message msg = new Message();
+                msg.obj = "ReadyOr";
+                Log.d("qqq", "Orders size  " + orders.size());
+                for (int i=0;i<orders.size();i++){
+                    if (i>orders.size()/4+1){
+                        break;
+                    }
+                    Log.d("qqq",  orders.size() + "  i = " + i);
+                }
+                h.sendMessage(msg);
             }
         };
         runnable.run();
@@ -282,19 +308,16 @@ public class Server {
                         for (DataSnapshot Snapshot : snapshot.getChildren()) {
                             try {
                                 Good good = Snapshot.getValue(Good.class);
-                                Log.d("qqq", good.getName() + "" + search_n + ";;" + good.getName().contains(search_n));
                                 String q = good.getName().toLowerCase();
                                 if (q.contains(search_n)) {
                                     ret.add(good);
                                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                                     LocalDateTime now = LocalDateTime.now();
-                                    Log.d("qqq", Integer.toString(ret.size()) + dtf.format(now));
                                 }
                             } catch (Exception e) {
                                 Log.d("qqq", e.toString());
                             }
                         }
-                        Log.d("qqq", "ret size  " + Integer.toString(ret.size()));
                         searchresult = ret;
                         if (search_n.equals("")){
                             all = ret;
@@ -308,7 +331,7 @@ public class Server {
                             }
                         };
                         Message msg = new Message();
-                        msg.obj = "Ready";
+                        msg.obj = "ReadyGo";
                         h.sendMessage(msg);
                     }
 
@@ -339,7 +362,6 @@ public class Server {
         ConfigDao configDao = db.configDao();
         Config d = configDao.getByName("email");
         String q = d.value;
-
         String e = "";
         for (int i=0;i<q.length();i++){
             if (q.charAt(i) == '.') {
@@ -349,13 +371,13 @@ public class Server {
                 e+=q.charAt(i);
             }
         }
+        ArrayList<Pair<String, Pair<Integer, Integer>>> g = new ArrayList<>();
         for (int i=0;i<orderContents.size();i++){
-            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("name").setValue(orderContents.get(i).goodname);
-            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("count").setValue(orderContents.get(i).count);
-            databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("goodlist").child(Integer.toString(orderContents.get(i).goodid)).child("price").setValue(orderContents.get(i).price);
+            g.add(new Pair<>(orderContents.get(i).goodname, new Pair<>(orderContents.get(i).price, orderContents.get(i).count)));
         }
-        databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("status").setValue(order.status);
-        databaseReference.child(e).child(Long.toString(currentIdForOrders)).child("time").setValue(order.time);
+        FilledOrder filledOrder = new FilledOrder(g,(int)currentIdForOrders, order.status, order.time);
+        Log.d("eee", "filledorder create  " + filledOrder.time);
+        databaseReference.child(e).child(Long.toString(currentIdForOrders)).setValue(filledOrder);
     }
 
     public String getTime() {

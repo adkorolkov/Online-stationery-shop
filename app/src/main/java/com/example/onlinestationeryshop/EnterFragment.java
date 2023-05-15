@@ -50,9 +50,10 @@ public class EnterFragment extends Fragment {
                 Log.d("qqq", "Broadcaststart");
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
-                Log.d("qqq", h);
+                String w = intent.getStringExtra(server.INFOORDER);
+                Log.d("qqq", w + "  w in Broadcast");
                 boolean a = mViewModel.IsEntered();
-                if (h.equals("Ready") && a) {
+                if (h.equals("ReadyGo") && w!=null && w.equals("ReadyOr") && a) {
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
                     NavController c = NavHostFragment.findNavController(navhost);
                     c.navigate(R.id.action_to_CatalogFragment);
@@ -95,7 +96,6 @@ public class EnterFragment extends Fragment {
             regi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println("aaaaaaaa");
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
                     NavController c = NavHostFragment.findNavController(navhost);
                     c.navigate(R.id.action_to_RegistrationFragment);

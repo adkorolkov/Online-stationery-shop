@@ -48,7 +48,7 @@ public class OrdersViewModel extends AndroidViewModel {
                 list.add(new Pair<>(orderContenti.goodname, new Pair<>(orderContenti.price, orderContenti.count)));
             }
             Server server = Server.getInstance(getApplication().getApplicationContext());
-            FilledOrder filledOrder = new FilledOrder(list, orders.get(i).status, orders.get(i).time, orders.get(i).id);
+            FilledOrder filledOrder = new FilledOrder(list, orders.get(i).id,orders.get(i).status, orders.get(i).time);
             returned.add(filledOrder);
         }
         System.out.println("len returned  " + returned.size());

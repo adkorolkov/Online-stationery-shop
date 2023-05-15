@@ -36,7 +36,7 @@ public class StartFragment extends Fragment {
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
                 Log.d("qqq", h);
-                if (h.equals("Ready")) {
+                if (h.equals("ReadyGo")) {
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
                     NavController c = NavHostFragment.findNavController(navhost);
                     c.navigate(R.id.action_to_EnterFragment);

@@ -293,7 +293,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         server = Server.getInstance(getActivity().getApplicationContext());
         fillData(server.search());
         updateAdapter(listitem);
-        Log.d("qqq", "rrrrr"+server.orders.size());
         getActivity().registerReceiver(receiver, new IntentFilter(goodAdapter.CHANNEL));
         getActivity().registerReceiver(receiverq, new IntentFilter(server.CHANNEL));
     }
@@ -363,6 +362,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("qqq", "rrrrr"+server.orders.size());
                 search(view);
             }
         });

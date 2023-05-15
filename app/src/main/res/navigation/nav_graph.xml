@@ -28,7 +28,9 @@
             app:destination="@id/CatalogFragment"/>
         <action
             android:id="@+id/action_to_RegistrationFragment"
-            app:destination="@id/RegistrationFragment"/>
+            app:destination="@id/RegistrationFragment"
+            app:popUpTo="@id/RegistrationFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 

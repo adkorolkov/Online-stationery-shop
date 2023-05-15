@@ -1,6 +1,7 @@
 package com.example.onlinestationeryshop;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -24,10 +25,12 @@ public class EnterViewModel extends AndroidViewModel {
         DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
         System.out.println("start IsEntered");
         ConfigDao configDao = db.configDao();
+        Config configEmail = configDao.getByName("email");
         System.out.println("get db");
         Config is = configDao.getByName("enter");
         if (is!=null){
             if(is.value.equals("true")) {
+                server.fillOrders(configEmail.value);
                 return true;
             }
             else{
