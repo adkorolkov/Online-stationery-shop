@@ -53,7 +53,6 @@ public class CartFragment extends Fragment {
     ArrayList<Good>  listitem;
     private TextView count_cart;
     TextView countQ;
-    private Server server;
     private CartRecuclerViewAdapter adapter;
     private RecyclerView recyclerView;
 
@@ -95,15 +94,13 @@ public class CartFragment extends Fragment {
         }
     }
     private void updateCart(){
-        server = Server.getInstance(getActivity().getApplicationContext());
-        if (server.getCartCount()>0) {
+        if (mViewModel.getCartCount()>0) {
             cartLatout.setVisibility(View.VISIBLE);
             nullCart.setVisibility(View.GONE);
             payLayout.setVisibility(View.VISIBLE);
-            count_cart.setText(server.getCartCount().toString());
-            System.out.println("getPrice  " + Integer.toString(server.getCartPrice()));
-            price.setText(Integer.toString(server.getCartPrice()) + " ₽");
-            countQ.setText(Integer.toString(server.getCartCount()) + " товаров");
+            count_cart.setText(mViewModel.getCartCount().toString());
+            price.setText(mViewModel.getCartPrice() + " ₽");
+            countQ.setText(mViewModel.getCartCount() + " товаров");
         }
         else{
             cartLatout.setVisibility(View.GONE);
@@ -133,8 +130,8 @@ public class CartFragment extends Fragment {
                     updateCart();
                 }
                 else {
-                    server.deleteCartItem(index);
-                    fillData(server.getCartItems());
+                    mViewModel.deleteCartItem(index);
+                    fillData(mViewModel.getCartItems());
                     updateAdapter(listitem);
                     updateCart();
                 }
@@ -148,8 +145,22 @@ public class CartFragment extends Fragment {
 
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateCart();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                fillData(mViewModel.getCartItems());
+            }
+        };
+        runnable.run();
+        updateAdapter(listitem);
+        getActivity().registerReceiver(receiver, new IntentFilter(adapter.CHANNEL));
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        server = Server.getInstance(getActivity().getApplicationContext());
         listitem = new ArrayList<Good>();
         cartLatout = binding.cartLayout;
         count_cart = getActivity().findViewById(R.id.count_cart);
@@ -157,17 +168,7 @@ public class CartFragment extends Fragment {
         payLayout = binding.payLayout;
         price = binding.priceAll;
         countQ = binding.countTotal;
-        updateCart();
         recyclerView = binding.cartList;
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                server.getCartItems();
-            }
-        };
-        runnable.run();
-        fillData(server.getCartItems());
-        updateAdapter(listitem);
         Button pay = binding.pay;
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,11 +176,10 @@ public class CartFragment extends Fragment {
                 mViewModel.addToOrder();
                 mViewModel.sendMessage();
                 Toast.makeText(getContext().getApplicationContext(), "Оплачено, следите за статусом заказа", Toast.LENGTH_SHORT).show();
-                server.setNullCart();
+                mViewModel.setNullCart();
                 updateCart();
             }
         });
-        getActivity().registerReceiver(receiver, new IntentFilter(adapter.CHANNEL));
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

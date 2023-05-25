@@ -33,38 +33,45 @@ public class CartFragmentViewModel  extends AndroidViewModel {
 
 
     public void addToOrder(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        Order order = new Order("Создан", dtf.format(now));
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        OrderDao orderDao = db.orderDao();
-        OrderContentDao orderContentDao = db.orderContentDao();
-        long orderId = orderDao.insert(order);
         Server server = Server.getInstance(getApplication().getApplicationContext());
-        server.setCurrentIdForOrders(orderId);
-        CartDao cartDao = db.cartDao();
-        List<Cart> cart = cartDao.getAll();
-        ArrayList<OrderContent> resultOrder = new ArrayList<>();
-        for (int i=0;i<cart.size();i++){
-            OrderContent u = new OrderContent(orderId, cart.get(i).goodid, cart.get(i).count, cart.get(i).goodname, cart.get(i).price);
-            resultOrder.add(u);
-            orderContentDao.insert(u);
-        }
-        server.setOrderToFirebase(order, resultOrder);
+        server.addToOrder();
+    }
 
+
+    public ArrayList<Good> getCartItems(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.getCartItems();
+    }
+
+    public Integer getCartCount(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        Integer r = server.getCartCount();
+        if(r!=null){
+            return r;
+        }
+        else{
+            return 0;
+        }
+    }
+
+
+    public void deleteCartItem(int id){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.deleteCartItem(id);
+    }
+    public void setNullCart() {
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.setNullCart();
+    }
+
+
+    public Integer getCartPrice(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.getCartPrice();
     }
 
     public void sendMessage(){
-        h = new Handler(Looper.getMainLooper()){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                Intent i = new Intent(CHANNEL); // интент для отправки ответа
-                i.putExtra(INFO, msg.obj.toString()); // добавляем в интент данные
-                ctx.sendBroadcast(i); // рассылаем
-            }
-        };
-        Message msg = new Message();
-        msg.obj = "true";
-        h.sendMessage(msg);
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        server.sendAddOrderMessage();
     }
 }

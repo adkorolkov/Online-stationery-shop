@@ -56,16 +56,12 @@ public class Server {
     private FilledOrder currentOrder;
     public String INFOGOOD = "INFOGOOD";
     public String INFOORDER = "INFOORDER";
+    public String INFOADDORDER = "AddOrder";
     public String CHANNEL = "Canal";
     private ArrayList<Good> searchresult;
 
-    public MutableLiveData<Good> getSearchList() {
-        return searchlist;
-    }
 
-    private MutableLiveData<Good> searchlist;
     private ArrayList<Good> all;
-    private ArrayList<Good> cart;
     private Context context;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReferenceorder;
@@ -76,61 +72,9 @@ public class Server {
     private DataBase db;
     private String UserKey = "User";
     private String GoodKey  = "Good";
-
-
-    private ArrayList<Good> createGoods(){
-        ArrayList<Good> e = new ArrayList<>();
-        ArrayList<Integer> images_tr = new ArrayList<>();
-        images_tr.add(R.drawable.tractor);
-        images_tr.add(R.drawable.orange_will);
-        images_tr.add(R.drawable.red_will);
-        images_tr.add(R.drawable.will_gorizont);
-        ArrayList<Integer> images_mi = new ArrayList<>();
-        images_mi.add(R.drawable.mishe);
-        images_mi.add(R.drawable.orange_mi);
-        images_mi.add(R.drawable.heart_mi);
-        images_mi.add(R.drawable.circle_mi);
-        ArrayList<Integer> images_me = new ArrayList<>();
-        images_me.add(R.drawable.meme_start);
-        images_me.add(R.drawable.meme1);
-        images_me.add(R.drawable.meme2);
-        images_me.add(R.drawable.meme3);
-        int[] a = {1,2,3};
-        for (int i = 0; i < 50; i++) {
-            java.util.Random random = new java.util.Random();
-            int random_computer_card = random.nextInt(a.length);
-            if (random_computer_card==0){
-                e.add(new Good(R.drawable.mishe, "Суперская игровая мышь, которая позволит нагибать всех ботов", 1500, "Мышь компьютерная", "В комплекте поставляется 2 мышки, в красном и белом варианте, чтобы можно было делиться с другом как Польшой. Также много кнопок - целых 3", images_mi,i));
-            }
-            else if (random_computer_card==1){
-                e.add(new Good(R.drawable.tractor, "Колесо трактора, лучший транспорт", 90000, "Колесо трактора", "Колесо трактора - лучший транспорт до вуза, быстрее метро", images_tr,i));
-            }
-            else if (random_computer_card==2){
-                e.add(new Good(R.drawable.meme_start, "Мемы жёсткие для жёсткого вкида на паре", 200, "Мемы жёсткие", "Если вам хочется fuck, то нужно срочно покупать это для жёсткого вкида. Всегда ждём снова", images_me,i));
-            }
-        }
-        return e;
-    }
-
-
-    private void fillGoods(GoodDao goodDao){
-        ArrayList<Good> g = createGoods();
-        FirebaseApp.initializeApp(context);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReferencegood= firebaseDatabase.getReference(GoodKey);
-        for (int i=0;i<g.size();i++){
-            Good good = g.get(i);
-            databaseReferencegood.child(Integer.toString(good.getIdg())).setValue(good);
-            goodDao.insert(g.get(i));
-        }
-    }
-
-
     private Server(Context contex){
         searchresult = new ArrayList<>();
-        searchlist = new MutableLiveData<Good>() {};
         orders = new HashMap<>();
-        cart = new ArrayList<>();
         context = contex;
         db = Room.databaseBuilder(contex, DataBase.class, "stationery").allowMainThreadQueries().build();
         GoodDao goodDao = db.goodDao();
@@ -167,12 +111,73 @@ public class Server {
         cartDao.update(cart1);
     }
 
+    public void sendAddOrderMessage(){
+        Handler h;
+        h = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                i.putExtra(INFOADDORDER, msg.obj.toString()); // добавляем в интент данные
+                context.sendBroadcast(i); // рассылаем
+            }
+        };
+        Message msg = new Message();
+        msg.obj = "true";
+        h.sendMessage(msg);
+    }
+
     public void deleteCartItem(int id){
         CartDao cartDao = db.cartDao();
         cartDao.deleteById(id);
     }
 
+    public ArrayList<History> fillDatas(){
+        HistoryDao historyDao = db.historyDao();
+        List<History> history = historyDao.getLast(20);
+        return fillData(history);
+    }
 
+    private ArrayList<History> fillData(List<History> e) {
+        ArrayList<History> listitem = new ArrayList<>();
+        for(int i=0;i< e.size();i++) {
+            listitem.add(e.get(i));
+        }
+        return listitem;
+    }
+
+    public void insertConfig(String name, String value){
+        ConfigDao configDao = db.configDao();
+        configDao.insert(new Config(name, value));
+    }
+
+    public void updateConfig(String name, String value){
+        ConfigDao configDao = db.configDao();
+        Config updateble = configDao.getByName(name);
+        updateble.value = value;
+        configDao.update(updateble);
+    }
+
+    public void deleteConfig(String name){
+        ConfigDao configDao = db.configDao();
+        configDao.delete(name);
+    }
+
+    public void addUser(String email, String password){
+        deleteAllConfig();
+        insertConfig("email", email);
+        insertConfig("password", Integer.toString(password.hashCode()));
+        insertConfig("enter", "true");
+        fillOrders(email);
+    }
+    public void deleteAllConfig(){
+        ConfigDao configDao = db.configDao();
+        configDao.deleteAll();
+    }
+
+    public void deleteAllHistory(){
+        HistoryDao historyDao = db.historyDao();
+        historyDao.deleteAll();
+    }
 
     public boolean isItemInCart(Integer id){
         CartDao cartDao = db.cartDao();
@@ -197,8 +202,13 @@ public class Server {
 
     public Integer getCartCount(){
         CartDao cartDao = db.cartDao();
-        return cartDao.getCartCount();
-    }
+        if(cartDao!=null) {
+            return cartDao.getCartCount();
+        }
+        else{
+            return null;
+        }
+        }
 
     public Integer getCartPrice(){
         CartDao cartDao = db.cartDao();
@@ -256,7 +266,6 @@ public class Server {
         FirebaseApp.initializeApp(context);
         HashMap<Integer, FilledOrder> neworders = new HashMap<>();
         Ok ok = new Ok(false);
-        final int[] Completed = {0};
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users").child(e);
         Handler h = new Handler(Looper.getMainLooper()){
@@ -373,6 +382,24 @@ public class Server {
 
 
 
+    public void addToOrder(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        Order order = new Order("Создан", dtf.format(now));
+        OrderDao orderDao = db.orderDao();
+        OrderContentDao orderContentDao = db.orderContentDao();
+        long orderId = orderDao.insert(order);
+        setCurrentIdForOrders(orderId);
+        CartDao cartDao = db.cartDao();
+        List<Cart> cart = cartDao.getAll();
+        ArrayList<OrderContent> resultOrder = new ArrayList<>();
+        for (int i=0;i<cart.size();i++){
+            OrderContent u = new OrderContent(orderId, cart.get(i).goodid, cart.get(i).count, cart.get(i).goodname, cart.get(i).price);
+            resultOrder.add(u);
+            orderContentDao.insert(u);
+        }
+        setOrderToFirebase(order, resultOrder);
+    }
 
     public void searchgoods(){
         ArrayList<Good> ret = new ArrayList<>();
@@ -395,7 +422,6 @@ public class Server {
                                 good.setDescription(good.getDescription().replace('_', '\n'));
                                 if (q.contains(search_n)) {
                                     ret.add(good);
-                                    searchlist.postValue(good);
                                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                                     LocalDateTime now = LocalDateTime.now();
                                 }

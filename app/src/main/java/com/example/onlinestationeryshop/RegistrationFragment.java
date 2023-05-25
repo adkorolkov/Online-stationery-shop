@@ -50,7 +50,7 @@ public class RegistrationFragment extends Fragment {
                 String first = firstpassword.getText().toString();
                 String second = secondpassword.getText().toString();
                 String mail = email.getText().toString();
-                if (first.equals(second) && mail.length()>2 && mail.contains("@")){
+                if (mViewModel.check(mail, first, second)){
                     mViewModel.addUser(email.getText().toString(), first);
                     bottomNavigationView.setVisibility(View.VISIBLE);
                     Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);

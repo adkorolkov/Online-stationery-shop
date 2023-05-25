@@ -33,10 +33,8 @@ public class OrdersFragment extends Fragment {
 
     private OrdersViewModel mViewModel;
 
-    private Server server;
     private FragmentOrdersBinding binding;
     OrderRecuclerViewAdapter orderRecuclerViewAdapter;
-    CartFragmentViewModel cartFragmentViewModel;
     List<FilledOrder> listitem;
     private RecyclerView recyclerView;
 
@@ -58,9 +56,7 @@ public class OrdersFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                System.out.println(intent.getStringExtra(orderRecuclerViewAdapter.INFO) +  "  " +   intent.getStringExtra(orderRecuclerViewAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(orderRecuclerViewAdapter.INFO);
-                Log.d("qqq", h);
                 if (h.equals("true")){
                     update();
                 }
@@ -88,8 +84,7 @@ public class OrdersFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                System.out.println(intent.getStringExtra(cartFragmentViewModel.INFO) +  " aboba " +   intent.getStringExtra(cartFragmentViewModel.INFO).equals("0"));
-                String h = intent.getStringExtra(cartFragmentViewModel.INFO);
+                String h = intent.getStringExtra(mViewModel.getAddOrderInfo());
                 if (h.equals("change")){
                     update();
                 }
@@ -104,8 +99,7 @@ public class OrdersFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                server = Server.getInstance(getActivity().getApplicationContext());
-                String h = intent.getStringExtra(server.INFOORDER);
+                String h = intent.getStringExtra(mViewModel.getOrderInfo());
                 if (h.equals("ChangeStatus")){
                     update();
                 }
@@ -118,7 +112,6 @@ public class OrdersFragment extends Fragment {
 
 
     private void updateAdapter(List<FilledOrder>  listitem){
-        System.out.println("len listitem in updateAdapter  " + listitem.size());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         orderRecuclerViewAdapter = new OrderRecuclerViewAdapter(getContext(), listitem);
         recyclerView.setAdapter(orderRecuclerViewAdapter);
@@ -145,10 +138,7 @@ public class OrdersFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("qqq", "loop");
-                server = Server.getInstance(getActivity().getApplicationContext());
-                Log.d("qqq", server.fillOrders(mViewModel.getEmail())+"rr");
-                if(server.fillOrders(mViewModel.getEmail())) {
+                if(mViewModel.checkFilledOrders()) {
                     update();
                 }
                 loop();
@@ -158,12 +148,11 @@ public class OrdersFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        server = Server.getInstance(getActivity().getApplicationContext());
         update();
         loop();
         getActivity().registerReceiver(receiver, new IntentFilter(orderRecuclerViewAdapter.CHANNEL));
-        getActivity().registerReceiver(receiverTimer, new IntentFilter(cartFragmentViewModel.CHANNEL));
-        getActivity().registerReceiver(receiverStatus, new IntentFilter(server.CHANNEL));
+        getActivity().registerReceiver(receiverTimer, new IntentFilter(mViewModel.getChannel()));
+        getActivity().registerReceiver(receiverStatus, new IntentFilter(mViewModel.getChannel()));
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -176,7 +165,6 @@ public class OrdersFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getActivity().getApplication()).create(OrdersViewModel.class);
-        cartFragmentViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(this.getActivity().getApplication()).create(CartFragmentViewModel.class);
         // TODO: Use the ViewModel
     }
 

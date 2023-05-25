@@ -45,20 +45,14 @@ public class EnterFragment extends Fragment {
     protected BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            try {
-                Server server = Server.getInstance(getActivity().getApplicationContext());
-                String h = intent.getStringExtra(server.INFOGOOD);
-                String w = intent.getStringExtra(server.INFOORDER);
-                if (h.equals("ReadyGo") && w!=null && w.equals("ReadyOr")) {
-                    boolean a = mViewModel.IsEntered();
-                    if(a) {
-                        Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                        NavController c = NavHostFragment.findNavController(navhost);
-                        c.navigate(R.id.action_to_CatalogFragment);
-                    }
+            String good = intent.getStringExtra(mViewModel.getGoodINFO());
+            String order = intent.getStringExtra(mViewModel.getOrderINFO());
+            if (good!=null && good.equals("ReadyGo") && order!=null && order.equals("ReadyOr")) {
+                if(mViewModel.IsEntered()) {
+                    Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                    NavController c = NavHostFragment.findNavController(navhost);
+                    c.navigate(R.id.action_to_CatalogFragment);
                 }
-            } catch (Exception e) {
-                System.out.println(e);
             }
         }
     };
@@ -66,27 +60,19 @@ public class EnterFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        try {
-            boolean a = mViewModel.isOrdersFilled();
-            if (a){
-                BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
-                bottomNavigationView.setVisibility(View.VISIBLE);
-                Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                NavController c = NavHostFragment.findNavController(navhost);
-                c.navigate(R.id.action_to_CatalogFragment);
-            }
+        getActivity().registerReceiver(receiver, new IntentFilter(mViewModel.getChannel()));
+        if (mViewModel.isOrdersFilled()){
+            BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
+            bottomNavigationView.setVisibility(View.VISIBLE);
+            Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+            NavController c = NavHostFragment.findNavController(navhost);
+            c.navigate(R.id.action_to_CatalogFragment);
         }
-        catch (Exception e){
-            System.out.println(e+"qqqe");
-        }
-
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
         bottomNavigationView.setVisibility(View.GONE);
-        Server server = Server.getInstance(getActivity().getApplicationContext());
-        getActivity().registerReceiver(receiver, new IntentFilter(server.CHANNEL));
         try {
             EditText email = binding.email;
             EditText password = binding.password;

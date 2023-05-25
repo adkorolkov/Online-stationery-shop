@@ -45,4 +45,23 @@ public class OrdersViewModel extends AndroidViewModel {
     }
 
 
+    public boolean checkFilledOrders(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.fillOrders(getEmail());
+    }
+
+    public String getChannel(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.CHANNEL;
+    }
+
+    public String getOrderInfo(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.INFOORDER;
+    }
+
+    public String getAddOrderInfo(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.INFOADDORDER;
+    }
 }

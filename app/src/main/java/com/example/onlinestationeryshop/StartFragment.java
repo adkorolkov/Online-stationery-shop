@@ -53,7 +53,6 @@ public class StartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Server server = Server.getInstance(getActivity().getApplicationContext());
-        Log.d("qqq", "qq"+R.drawable.ten1+"qq");
         getActivity().registerReceiver(receiver, new IntentFilter(server.CHANNEL));
         Runnable runnable = new Runnable() {
             @Override

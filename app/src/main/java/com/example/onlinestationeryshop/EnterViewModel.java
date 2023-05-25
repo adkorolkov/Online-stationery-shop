@@ -20,6 +20,21 @@ public class EnterViewModel extends AndroidViewModel {
     }
 
 
+    public String getGoodINFO(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.INFOGOOD;
+    }
+
+    public String getOrderINFO(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.INFOORDER;
+    }
+
+    public String getChannel(){
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        return server.CHANNEL;
+    }
+
     public boolean isOrdersFilled(){
         if(IsEntered()){
             Server server = Server.getInstance(getApplication().getApplicationContext());
@@ -36,10 +51,6 @@ public class EnterViewModel extends AndroidViewModel {
 
     public boolean IsEntered(){
         Server server = Server.getInstance(getApplication().getApplicationContext());
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        System.out.println("start IsEntered");
-        ConfigDao configDao = db.configDao();
-        System.out.println("get db");
         String is = server.getConfig("enter");
         if (is!=null){
             if(is.equals("true")) {
@@ -54,16 +65,13 @@ public class EnterViewModel extends AndroidViewModel {
         }
     }
     public boolean checkEmail(String email){
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        ConfigDao configDao = db.configDao();
-        Config configEmail = configDao.getByName("email");
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        String configEmail = server.getConfig("email");
         if (configEmail==null){
             return false;
         }
-        System.out.println(configEmail + " aboba");
-        if (configEmail.value.equals(email)) {
-            Server server = Server.getInstance(getApplication().getApplicationContext());
-            server.fillOrders(configEmail.value);
+        if (configEmail.equals(email)) {
+            server.fillOrders(configEmail);
             return true;
         }
         else {
@@ -72,26 +80,23 @@ public class EnterViewModel extends AndroidViewModel {
     }
 
     public void updateEnter(String enter){
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        ConfigDao configDao = db.configDao();
-        Config configEnter = configDao.getByName("enter");
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        String configEnter = server.getConfig("enter");
         if (configEnter==null){
-            configDao.insert(new Config("enter", "true"));
+            server.insertConfig("enter", "true");
         }
         else {
-            configEnter.value = enter;
-            configDao.update(configEnter);
+            server.updateConfig("enter", enter);
         }
     }
 
     public boolean checkPassword(String password){
-        DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
-        ConfigDao configDao = db.configDao();
-        Config configPassword = configDao.getByName("password");
+        Server server = Server.getInstance(getApplication().getApplicationContext());
+        String configPassword = server.getConfig("password");
         if (configPassword==null){
             return false;
         }
-        if (configPassword.value.equals(password)) {
+        if (configPassword.equals(Integer.toString(password.hashCode()))) {
             return true;
         }
         else {

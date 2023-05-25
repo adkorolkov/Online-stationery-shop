@@ -132,19 +132,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         catch (Exception e){
             System.out.println("bbb"+e);
         }
-        // обрабатываете здесь ваши данные
-
-       /* try{
-            Intent intent = new Intent(this, InfoGoodActivity.class);
-            intent.putExtra("index", i);
-            System.out.println(server.getForInd(i).getName());
-            intent.putExtra("description", server.getForInd(i).getDescription());
-            intent.putExtra("images", server.getForInd(i).getImages());
-            startActivity(intent);
-        }
-        catch (Exception e){
-            System.out.println("intent  " + e.toString());
-        }*/
     }
 
 
@@ -217,7 +204,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         public void onReceive(Context context, Intent intent) {
             try {
                 server = Server.getInstance(getActivity().getApplicationContext());
-                System.out.println(server+"sss");
                 System.out.println(intent.getStringExtra(goodAdapter.INFO) +  "  " +   intent.getStringExtra(goodAdapter.INFO).equals("0"));
                 String h = intent.getStringExtra(goodAdapter.INFO);
                 int index = Integer.parseInt(h);
