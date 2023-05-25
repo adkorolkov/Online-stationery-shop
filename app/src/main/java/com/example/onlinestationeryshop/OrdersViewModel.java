@@ -12,6 +12,7 @@ import androidx.room.Room;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class OrdersViewModel extends AndroidViewModel {
         for (Map.Entry<Integer, FilledOrder> entry : orderlist.entrySet()){
             orders.add(entry.getValue());
         }
+        Collections.reverse(orders);
         return orders;
     }
 

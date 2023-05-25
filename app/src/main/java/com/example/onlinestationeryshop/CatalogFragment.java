@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -67,6 +68,8 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
     private MainActivity mainActivity = new MainActivity();
 
 
+
+    private LiveData<Good> data;
     private FragmentCatalogBinding mbinding;
     private TextView nulladapter;
     ArrayList<ArrayList<Integer>> cart;
@@ -156,7 +159,6 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
         editText.setText("");
         hideKeyboardFrom(view.getContext(),view);
         FocusOff(editText);
-        System.out.println(text + "aaa");
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -201,7 +203,7 @@ public class CatalogFragment extends Fragment  implements OnItemClickListener{
             try {
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
-                if (h.equals("Ready")) {
+                if (h.equals("ReadyGo")) {
                     fillData(server.search());
                     updateAdapter(listitem);
                 }

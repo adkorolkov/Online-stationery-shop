@@ -22,9 +22,9 @@ public class Cart {
 
     public Cart(int goodid, int count, String goodname, int price){
         this.goodid = goodid;
-        this.price = price;
         this.count = count;
         this.goodname = goodname;
+        this.price = price;
     }
 
     public Cart(){

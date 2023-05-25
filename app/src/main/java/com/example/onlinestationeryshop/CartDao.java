@@ -30,7 +30,7 @@ public interface CartDao {
     @Query("SELECT sum(c.count) FROM cart AS c")
     int getCartCount();
 
-    @Query("SELECT sum(g.price*c.count) FROM cart AS c JOIN good AS g ON c.goodid = g.id")
+    @Query("SELECT sum(price*count) FROM cart")
     int getCartPrice();
 
     @Query("DELETE FROM cart")

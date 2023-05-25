@@ -35,7 +35,6 @@ public class CartFragmentViewModel  extends AndroidViewModel {
     public void addToOrder(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        System.out.println(dtf.format(now)+"fffff");
         Order order = new Order("Создан", dtf.format(now));
         DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
         OrderDao orderDao = db.orderDao();
@@ -52,28 +51,6 @@ public class CartFragmentViewModel  extends AndroidViewModel {
             orderContentDao.insert(u);
         }
         server.setOrderToFirebase(order, resultOrder);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Order order1 = orderDao.getByID((int) orderId);
-                if (!order1.status.equals("Отменён")) {
-                    order1.status = "Готов";
-                    orderDao.update(order1);
-                    h = new Handler(Looper.getMainLooper()) {
-                        @Override
-                        public void handleMessage(@NonNull Message msg) {
-                            Intent i = new Intent(CHANNEL); // интент для отправки ответа
-                            i.putExtra(INFO, msg.obj.toString()); // добавляем в интент данные
-                            ctx.sendBroadcast(i); // рассылаем
-                        }
-                    };
-                }
-                Message msg = new Message();
-                msg.obj = "change";
-                h.sendMessage(msg);
-            }
-        }, 20000);
 
     }
 

@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".InfoGoodFragment"
     android:orientation="vertical">
+    <TextView
+        android:id="@+id/text"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </androidx.viewpager2.widget.ViewPager2>
     <ScrollView
         android:layout_weight="30"
         android:layout_marginTop="15dp"
@@ -15,19 +26,6 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/text"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </TextView>
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewpager"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </androidx.viewpager2.widget.ViewPager2>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +38,7 @@
     android:layout_weight="1"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="60dp">
     <TextView
         android:layout_marginLeft="40dp"
         android:gravity="center_vertical"

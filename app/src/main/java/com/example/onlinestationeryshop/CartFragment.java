@@ -127,14 +127,12 @@ public class CartFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                System.out.println(intent.getStringExtra(adapter.INFO) +  "  " +   intent.getStringExtra(adapter.INFO).equals("0"));
                 String h = intent.getStringExtra(adapter.INFO);
                 int index = Integer.parseInt(h);
                 if (index==-1){
                     updateCart();
                 }
                 else {
-                    System.out.println("DELETE in BROADCAST " + index);
                     server.deleteCartItem(index);
                     fillData(server.getCartItems());
                     updateAdapter(listitem);

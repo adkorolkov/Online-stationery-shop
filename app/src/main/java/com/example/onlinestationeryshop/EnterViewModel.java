@@ -13,24 +13,36 @@ import java.io.Closeable;
 public class EnterViewModel extends AndroidViewModel {
     // TODO: Implement the ViewModel
 
-    private GetDataBase gdt;
+
 
     public EnterViewModel(@NonNull Application application) {
         super(application);
     }
 
 
+    public boolean isOrdersFilled(){
+        if(IsEntered()){
+            Server server = Server.getInstance(getApplication().getApplicationContext());
+            String email = server.getConfig("email");
+            if(email!=null) {
+                server.fillOrders(email);
+            }
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     public boolean IsEntered(){
         Server server = Server.getInstance(getApplication().getApplicationContext());
         DataBase db = Room.databaseBuilder(getApplication().getApplicationContext(), DataBase.class, "stationery").allowMainThreadQueries().build();
         System.out.println("start IsEntered");
         ConfigDao configDao = db.configDao();
-        Config configEmail = configDao.getByName("email");
         System.out.println("get db");
-        Config is = configDao.getByName("enter");
+        String is = server.getConfig("enter");
         if (is!=null){
-            if(is.value.equals("true")) {
-                server.fillOrders(configEmail.value);
+            if(is.equals("true")) {
                 return true;
             }
             else{

@@ -137,16 +137,23 @@ public class OrdersFragment extends Fragment {
     }
 
 
+
+
+
     private void loop(){
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.d("qqq", "loop");
                 server = Server.getInstance(getActivity().getApplicationContext());
-                server.fillOrders(mViewModel.getEmail());
-                update();
+                Log.d("qqq", server.fillOrders(mViewModel.getEmail())+"rr");
+                if(server.fillOrders(mViewModel.getEmail())) {
+                    update();
+                }
+                loop();
             }
-        }, 5000);
+        }, 60000);
     }
     @Override
     public void onStart() {

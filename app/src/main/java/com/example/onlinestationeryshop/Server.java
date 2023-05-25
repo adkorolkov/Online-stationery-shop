@@ -13,6 +13,8 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Server {
@@ -55,6 +58,12 @@ public class Server {
     public String INFOORDER = "INFOORDER";
     public String CHANNEL = "Canal";
     private ArrayList<Good> searchresult;
+
+    public MutableLiveData<Good> getSearchList() {
+        return searchlist;
+    }
+
+    private MutableLiveData<Good> searchlist;
     private ArrayList<Good> all;
     private ArrayList<Good> cart;
     private Context context;
@@ -119,6 +128,7 @@ public class Server {
 
     private Server(Context contex){
         searchresult = new ArrayList<>();
+        searchlist = new MutableLiveData<Good>() {};
         orders = new HashMap<>();
         cart = new ArrayList<>();
         context = contex;
@@ -229,7 +239,9 @@ public class Server {
         return q;
     }
 
-    public void fillOrders(String email){
+
+
+    public boolean fillOrders(String email){
         String e = "";
         for (int i=0;i<email.length();i++){
             if (email.charAt(i) == '.') {
@@ -242,6 +254,8 @@ public class Server {
         FirebaseDatabase firebaseDatabase;
         DatabaseReference databaseReference;
         FirebaseApp.initializeApp(context);
+        HashMap<Integer, FilledOrder> neworders = new HashMap<>();
+        Ok ok = new Ok(false);
         final int[] Completed = {0};
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users").child(e);
@@ -253,6 +267,7 @@ public class Server {
                 context.sendBroadcast(i); // рассылаем
             }
         };
+        Thread thread;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -264,12 +279,25 @@ public class Server {
                                 //String a = Snapshot.getValue().toString(); // parsing from json
                                 // "snapshot " + a);
                                 FilledOrder fillorder = Snapshot.getValue(FilledOrder.class);
-                                orders.put(fillorder.orderId, fillorder);
+                                neworders.put(fillorder.orderId, fillorder);
                             } catch (Exception e) {
                             }
                         }
-                    }
+                        if(neworders.size()>orders.size()){
+                            orders = neworders;
+                            ok.setOk(true);
+                        }
+                        else if((neworders.size()==orders.size()) && neworders.size()>0){
 
+                            for(Map.Entry<Integer, FilledOrder> entry : neworders.entrySet()){
+                                if(!entry.getValue().status.equals(orders.get(entry.getKey()).status)){
+                                    orders = neworders;
+                                    ok.setOk(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
@@ -280,6 +308,7 @@ public class Server {
             }
         };
         runnable.run();
+        return ok.ok;
     }
 
 
@@ -340,7 +369,6 @@ public class Server {
                 h.sendMessage(msg);
             }
         };
-        runnable.run();
     }
 
 
@@ -364,8 +392,10 @@ public class Server {
                             try {
                                 Good good = Snapshot.getValue(Good.class);
                                 String q = good.getName().toLowerCase();
+                                good.setDescription(good.getDescription().replace('_', '\n'));
                                 if (q.contains(search_n)) {
                                     ret.add(good);
+                                    searchlist.postValue(good);
                                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                                     LocalDateTime now = LocalDateTime.now();
                                 }
@@ -395,9 +425,8 @@ public class Server {
                 });
             }
         };
-        runnable.run();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
+        Thread thread = new Thread(runnable);
+        thread.run();
     }
 
 
@@ -433,6 +462,18 @@ public class Server {
         return dtf.format(now);
     }
 
+
+    public String getConfig(String name){
+        ConfigDao configDao = db.configDao();
+        Config h = configDao.getByName(name);
+        if(h!=null){
+            return h.value;
+        }
+        else{
+            return null;
+        }
+    }
+
     public String getMonth(String i){
         HashMap<String, String> month = new HashMap<>();
         month.put("01", "января");
@@ -455,32 +496,38 @@ public class Server {
 
 
     public void changeStatusOrder(String status, int id){
-        ConfigDao configDao = db.configDao();
-        Config d = configDao.getByName("email");
-        String email = d.value;
-        String e = "";
-        for (int i=0;i<email.length();i++){
-            if (email.charAt(i) == '.') {
-                e+='_';
-            }
-            else{
-                e+=email.charAt(i);
-            }
-        }
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReferenceorder= firebaseDatabase.getReference("Users");
-        databaseReferenceorder.child(e).child(Integer.toString(id)).child("status").setValue(status);
-        Handler h = new Handler(Looper.getMainLooper()){
+        Runnable runnable = new Runnable() {
             @Override
-            public void handleMessage(@NonNull Message msg) {
-                Intent i = new Intent(CHANNEL); // интент для отправки ответа
-                i.putExtra(INFOORDER, msg.obj.toString()); // добавляем в интент данные
-                context.sendBroadcast(i); // рассылаем
+            public void run() {
+                ConfigDao configDao = db.configDao();
+                Config d = configDao.getByName("email");
+                String email = d.value;
+                String e = "";
+                for (int i=0;i<email.length();i++){
+                    if (email.charAt(i) == '.') {
+                        e+='_';
+                    }
+                    else{
+                        e+=email.charAt(i);
+                    }
+                }
+                firebaseDatabase = FirebaseDatabase.getInstance();
+                databaseReferenceorder= firebaseDatabase.getReference("Users");
+                databaseReferenceorder.child(e).child(Integer.toString(id)).child("status").setValue(status);
+                Handler h = new Handler(Looper.getMainLooper()){
+                    @Override
+                    public void handleMessage(@NonNull Message msg) {
+                        Intent i = new Intent(CHANNEL); // интент для отправки ответа
+                        i.putExtra(INFOORDER, msg.obj.toString()); // добавляем в интент данные
+                        context.sendBroadcast(i); // рассылаем
+                    }
+                };
+                Message msg = new Message();
+                msg.obj = "ChangeStatus";
+                h.sendMessage(msg);
             }
         };
-        Message msg = new Message();
-        msg.obj = "ChangeStatus";
-        h.sendMessage(msg);
+        runnable.run();
     }
 
     public Good getForInd(int i){

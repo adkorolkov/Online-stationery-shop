@@ -114,7 +114,7 @@ public class InfoGoodFragment extends Fragment {
         TextView priceT = binding.price;
         ImageButton addToCart = binding.addToCart;
         linearLayout.setVisibility(View.GONE);
-        count.setTextSize(30);
+        count.setTextSize(25);
         if (server.isItemInCart(r)){
             addToCart.setVisibility(View.GONE);
             linearLayout.setVisibility(View.VISIBLE);
@@ -145,7 +145,7 @@ public class InfoGoodFragment extends Fragment {
             public void onClick(View v) {
                 Integer i = Integer.parseInt(count.getText().toString()) + 1;
                 if (i>999){
-                    count.setTextSize(25);
+                    count.setTextSize(20);
                 }
                 String e = priceT.getText().toString();
                 //priceT.setText(Integer.toString(Integer.parseInt(priceT.getText().toString()) + price) + " ₽");

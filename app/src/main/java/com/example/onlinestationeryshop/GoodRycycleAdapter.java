@@ -87,9 +87,9 @@ public class GoodRycycleAdapter extends RecyclerView.Adapter<GoodRycycleAdapter.
         // заполняем View в пункте списка данными из товаров: наименование, цена
         // и картинка
         String name = p.getName();
-        if(name.length() > 15) {
+        if(name.length() > 18) {
             String h = "";
-            for (int i = 0; i < 13; i++) {
+            for (int i = 0; i < 16; i++) {
                 h += name.charAt(i);
             }
             name = h + "...";

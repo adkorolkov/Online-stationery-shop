@@ -49,11 +49,13 @@ public class EnterFragment extends Fragment {
                 Server server = Server.getInstance(getActivity().getApplicationContext());
                 String h = intent.getStringExtra(server.INFOGOOD);
                 String w = intent.getStringExtra(server.INFOORDER);
-                boolean a = mViewModel.IsEntered();
-                if (h.equals("ReadyGo") && w!=null && w.equals("ReadyOr") && a) {
-                    Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
-                    NavController c = NavHostFragment.findNavController(navhost);
-                    c.navigate(R.id.action_to_CatalogFragment);
+                if (h.equals("ReadyGo") && w!=null && w.equals("ReadyOr")) {
+                    boolean a = mViewModel.IsEntered();
+                    if(a) {
+                        Fragment navhost = getActivity().getSupportFragmentManager().findFragmentById(R.id.my_nav_host_fragment);
+                        NavController c = NavHostFragment.findNavController(navhost);
+                        c.navigate(R.id.action_to_CatalogFragment);
+                    }
                 }
             } catch (Exception e) {
                 System.out.println(e);
@@ -65,7 +67,7 @@ public class EnterFragment extends Fragment {
     public void onStart() {
         super.onStart();
         try {
-            boolean a = mViewModel.IsEntered();
+            boolean a = mViewModel.isOrdersFilled();
             if (a){
                 BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
                 bottomNavigationView.setVisibility(View.VISIBLE);
