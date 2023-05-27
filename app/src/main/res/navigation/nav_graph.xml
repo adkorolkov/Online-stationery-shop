@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/StartFragment"
-        android:name="com.example.onlinestationeryshop.StartFragment"
+        android:name="com.example.onlinestationeryshop.View.Start.StartFragment"
         android:label="fragmet_start"
         tools:layout="@layout/fragment_start">
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/EnterFragment"
-        android:name="com.example.onlinestationeryshop.EnterFragment"
+        android:name="com.example.onlinestationeryshop.View.Enter.EnterFragment"
         android:label="fragmet_enter"
         tools:layout="@layout/fragment_enter">
         <action
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/RegistrationFragment"
-        android:name="com.example.onlinestationeryshop.RegistrationFragment"
+        android:name="com.example.onlinestationeryshop.View.Registration.RegistrationFragment"
         android:label="fragment_reg"
         tools:layout="@layout/fragment_registration">
         <action
@@ -46,7 +46,7 @@
     </fragment>
     <fragment
         android:id="@+id/CatalogFragment"
-        android:name="com.example.onlinestationeryshop.CatalogFragment"
+        android:name="com.example.onlinestationeryshop.View.Catalog.CatalogFragment"
         android:label="fragment_catalog"
         tools:layout="@layout/fragment_catalog" >
         <action
@@ -65,7 +65,7 @@
     </fragment>
     <fragment
         android:id="@+id/InfoGoodFragment"
-        android:name="com.example.onlinestationeryshop.InfoGoodFragment"
+        android:name="com.example.onlinestationeryshop.View.InfoGood.InfoGoodFragment"
         android:label="fragment_info_good"
         tools:layout="@layout/fragment_info_good" >
         <action
@@ -86,7 +86,7 @@
     </fragment>
     <fragment
         android:id="@+id/CartFragment"
-        android:name="com.example.onlinestationeryshop.CartFragment"
+        android:name="com.example.onlinestationeryshop.View.Cart.CartFragment"
         android:label="cart_fragment"
         tools:layout="@layout/fragment_cart">
         <action
@@ -102,7 +102,7 @@
     </fragment>
     <fragment
         android:id="@+id/ProfileFragment"
-        android:name="com.example.onlinestationeryshop.ProfileFragment"
+        android:name="com.example.onlinestationeryshop.View.Profile.ProfileFragment"
         android:label="fragment_profile">
         <action
             android:id="@+id/action_to_OrderFragment"
@@ -122,7 +122,7 @@
     </fragment>
     <fragment
         android:id="@+id/HistotySearchFragment"
-        android:name="com.example.onlinestationeryshop.HistorySearchFragment"
+        android:name="com.example.onlinestationeryshop.View.HistorySearch.HistorySearchFragment"
         android:label="fragment_history_seacrh">
         <action
             android:id="@+id/action_to_OrderFragment"
@@ -140,7 +140,7 @@
 
     <fragment
         android:id="@+id/OrderFragment"
-        android:name="com.example.onlinestationeryshop.OrdersFragment"
+        android:name="com.example.onlinestationeryshop.View.Orders.OrdersFragment"
         android:label="fragment_orderlist">
         <action
             android:id="@id/action_to_CatalogFragment"
